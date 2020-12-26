@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Duration;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 
@@ -23,10 +24,12 @@ public class Window implements Serializable{
 	private WindowType type;
 	
 	@NotNull
+	@Positive
 	@Builder.Default
 	private Long tumblingInterval = Duration.ofHours(1).getSeconds();
 	
 	@NotNull
+	@Positive
 	@Builder.Default
 	private Long slidingInterval = Duration.ofMinutes(5).getSeconds();
 	
