@@ -28,6 +28,7 @@ public class TenantDynamoRepository implements TenantRepository {
 	
 	@PostConstruct
 	public void initialize() {
+		dynamoRepository.initialize();
 		cacheRepository.initialize();
 	}
 

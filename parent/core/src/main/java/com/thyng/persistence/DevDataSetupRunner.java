@@ -1,7 +1,10 @@
 package com.thyng.persistence;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -9,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import com.thyng.domain.tenant.Tenant;
 import com.thyng.domain.tenant.TenantRepository;
+import com.thyng.domain.thing.Thing;
+import com.thyng.domain.thing.ThingRepository;
+import com.thyng.domain.thing.ThingStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,12 +23,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DevDataSetupRunner implements CommandLineRunner {
 
+	private final ThingRepository thingRepository;
 	private final TenantRepository tenantRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
 		final List<Tenant> tenants = tenants();
-		tenants.forEach(tenantRepository::save);
+		
+		tenants.stream()
+			.map(tenantRepository::save)
+			.map(this::things)
+			.flatMap(Collection::stream)
+			.forEach(thingRepository::save);
+	}
+	
+	private List<Thing> things(final Tenant tenant){
+		final List<Thing> things = new ArrayList<>(10);
+		for(int index = 0; index < 10; index++) {
+			final Thing thing = new Thing();
+			thing.setName("Thing-" + index);
+			thing.setTenantId(tenant.getId());
+			thing.setInactivityPeriod(60l + index);
+			thing.setAttributes(attributes());
+			thing.setStatus(0 == index % 2 ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+			things.add(thing);
+		}
+		return things;
+	}
+	
+	private Map<String, String> attributes(){
+		final Map<String, String> attributes = new HashMap<>();
+		attributes.put("color", "red");
+		attributes.put("make", "m1");
+		attributes.put("model", "m2");
+		attributes.put("department", "dep1");
+		return attributes;
 	}
 
 	private List<Tenant> tenants(){
