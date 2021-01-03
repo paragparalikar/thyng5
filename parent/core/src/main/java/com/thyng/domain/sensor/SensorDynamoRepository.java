@@ -1,5 +1,6 @@
 package com.thyng.domain.sensor;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Repository;
@@ -39,6 +40,11 @@ public class SensorDynamoRepository extends AbstractRepository<Sensor> implement
 				&& Objects.equals(entityThingId, otherThingId)
 				&& !Objects.equals(entityId, otherId) 
 				&& StringUtil.equalsIgnoreCase(entityName, otherName);
+	}
+
+	@Override
+	public List<Sensor> findByThingId(String thingId) {
+		return findByPredicate(entry -> Objects.equals(thingId, entry.getValue().getThingId()));
 	}
 
 }

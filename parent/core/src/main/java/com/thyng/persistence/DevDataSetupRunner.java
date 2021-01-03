@@ -8,8 +8,9 @@ import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
+import com.thyng.domain.sensor.Sensor;
+import com.thyng.domain.sensor.SensorRepository;
 import com.thyng.domain.tenant.Tenant;
 import com.thyng.domain.tenant.TenantRepository;
 import com.thyng.domain.thing.Thing;
@@ -25,16 +26,27 @@ public class DevDataSetupRunner implements CommandLineRunner {
 
 	private final ThingRepository thingRepository;
 	private final TenantRepository tenantRepository;
+	private final SensorRepository sensorRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
-		final List<Tenant> tenants = tenants();
-		
-		tenants.stream()
-			.map(tenantRepository::save)
-			.map(this::things)
+		thingRepository.findAll().stream()
+			.map(this::sensors)
 			.flatMap(Collection::stream)
-			.forEach(thingRepository::save);
+			.forEach(sensorRepository::save);
+	}
+	
+	private List<Sensor> sensors(final Thing thing){
+		final List<Sensor> sensors = new ArrayList<>(5);
+		for(int index = 0; index < 10; index++) {
+			final Sensor sensor = new Sensor();
+			sensor.setName("Sensor-"+index);
+			sensor.setTenantId(thing.getTenantId());
+			sensor.setThingId(thing.getId());
+			sensor.setUnit("mm");
+			sensors.add(sensor);
+		}
+		return sensors;
 	}
 	
 	private List<Thing> things(final Tenant tenant){

@@ -3,6 +3,7 @@ package com.thyng.web;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,11 @@ public class SensorController {
 		return sensorService.findAll();
 	}
 
+	@GetMapping(params="thingId")
+	public List<Sensor> findByThingId(@RequestParam @NotBlank final String thingId){
+		return sensorService.findByThingId(thingId);
+	}
+	
 	@GetMapping("/{id}")
 	public Sensor getOne(@PathVariable final String id) {
 		return sensorService.getOne(id);

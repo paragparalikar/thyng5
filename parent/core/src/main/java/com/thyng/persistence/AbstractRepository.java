@@ -38,8 +38,8 @@ public class AbstractRepository<T extends AbstractEntity> implements Repository<
 		final String tenantId = null == item ? null : item.getTenantId();
 		final Tenant tenant = TenantContext.getTenant();
 		if(null != tenantId && null != tenant && !tenantId.equals(tenant.getId())) {
-			final String message = String.format("Can not operate with tenant id %d winthin "
-					+ "context for tenant id %d", tenantId, tenant.getId());
+			final String message = String.format("Can not operate with tenant id %s winthin "
+					+ "context for tenant id %s", tenantId, tenant.getId());
 			throw new UnauthorizedActionException(message);
 		}
 		return item;
@@ -47,12 +47,12 @@ public class AbstractRepository<T extends AbstractEntity> implements Repository<
 	
 	private Predicate<String, T> tenantPredicate(){
 		final Tenant tenant = TenantContext.getTenant();
-		final String tenantId = tenant.getId();
-		return entry -> tenantId.equals(AbstractEntity.class.cast(entry.getValue()).getTenantId());
+		return null == tenant ? entry -> Boolean.TRUE : 
+			entry -> tenant.getId().equals(AbstractEntity.class.cast(entry.getValue()).getTenantId());
 	}
 	
 	public long count() {
-		return null == TenantContext.getTenant() ? cache.size() : cache.aggregate(Aggregators.count(), tenantPredicate());
+		return cache.aggregate(Aggregators.count(), tenantPredicate());
 	}
 
 	public T getOne(String id) {
@@ -64,7 +64,13 @@ public class AbstractRepository<T extends AbstractEntity> implements Repository<
 	}
 
 	public List<T> findAll() {
-		return new ArrayList<>(null == TenantContext.getTenant() ? cache.values() : cache.values(tenantPredicate()));
+		return new ArrayList<>(cache.values(tenantPredicate()));
+	}
+	
+	protected List<T> findByPredicate(Predicate<String, T> predicate){
+		final Predicate<String, T> tenantPredicate = tenantPredicate();
+		final Predicate<String, T> compositePredicate = entry -> tenantPredicate.apply(entry) && predicate.apply(entry);
+		return new ArrayList<>(cache.values(compositePredicate));
 	}
 
 	public T save(T item) {
