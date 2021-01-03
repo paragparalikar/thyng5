@@ -22,7 +22,7 @@ public class Actuator extends AbstractEntity{
 
 	@DynamoDBRangeKey private Integer id;
 	@DynamoDBHashKey @NotNull @Positive private Integer tenantId;
-	@NotBlank @Positive private Integer thingId;
+	@NotNull @Positive private Integer thingId;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	
 	

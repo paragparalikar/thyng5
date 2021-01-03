@@ -27,7 +27,7 @@ public class DevConfiguration implements WebMvcConfigurer {
 			@Override
 			public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 					throws Exception {
-				//TenantContext.setTenant(tenantService.getOne(1));
+				TenantContext.setTenant(tenantService.getOne(1));
 				return true;
 			}
 		});

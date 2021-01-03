@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
+import com.thyng.domain.tenant.Tenant;
 import com.thyng.domain.tenant.TenantAware;
 import com.thyng.domain.tenant.TenantContext;
 
@@ -22,7 +23,10 @@ public class TenantAwareAdvice extends RequestBodyAdviceAdapter {
 			Class<? extends HttpMessageConverter<?>> converterType) {
 		if(body instanceof TenantAware) {
 			final TenantAware tenantAware = TenantAware.class.cast(body);
-			tenantAware.setTenantId(TenantContext.getTenant().getId());
+			final Tenant tenant = TenantContext.getTenant();
+			if(null != tenant) {
+				tenantAware.setTenantId(tenant.getId());
+			}
 		}
 		return body;
 	}
