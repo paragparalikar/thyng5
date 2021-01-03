@@ -2,8 +2,8 @@ package com.thyng.domain.tenant;
 
 import com.thyng.persistence.Repository;
 
-public interface TenantRepository extends Repository<Tenant, String>{
+public interface TenantRepository extends Repository<Tenant, Integer>{
 	
-	boolean existsByName(String id, String name);
+	boolean existsByName(Integer id, String name);
 	
 }

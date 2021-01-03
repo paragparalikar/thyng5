@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import com.hazelcast.cp.IAtomicLong;
 import com.thyng.domain.Identifiable;
 import com.thyng.domain.Nameable;
 
@@ -12,14 +13,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CacheRepository<T extends Identifiable<ID> & Nameable, ID> implements Repository<T, ID>{
+public class CacheRepository<T extends Identifiable<Integer> & Nameable> implements Repository<T, Integer>{
 	
 	@Getter
-	protected final Map<ID, T> cache;
-	protected final Repository<T, ID> delegate;
+	private final Map<Integer, T> cache;
+	private final IAtomicLong idProvider;
+	private final Repository<T, Integer> delegate;
 	
 	public void initialize() {
-		delegate.findAll().forEach(item -> cache.put(item.getId(), item));
+		delegate.findAll().forEach(item -> {
+			final Integer id = item.getId();
+			cache.put(id, item);
+			idProvider.alter(value -> id < value ? value : id);
+		});
 	}
 
 	@Override
@@ -28,7 +34,7 @@ public class CacheRepository<T extends Identifiable<ID> & Nameable, ID> implemen
 	}
 
 	@Override
-	public T getOne(ID id) {
+	public T getOne(Integer id) {
 		return cache.get(id);
 	}
 
@@ -45,13 +51,14 @@ public class CacheRepository<T extends Identifiable<ID> & Nameable, ID> implemen
 
 	@Override
 	public T save(T item) {
+		if(null == item.getId() || 0 == item.getId()) item.setId((int) idProvider.incrementAndGet());
 		final T saved = delegate.save(item);
 		cache.put(saved.getId(), saved);
 		return saved;
 	}
 	
 	@Override
-	public boolean existsByName(ID id, String name) {
+	public boolean existsByName(Integer id, String name) {
 		final String trimmedName = name.trim();
 		return cache.values().stream()
 				.filter(entity -> trimmedName.equalsIgnoreCase(entity.getName().trim()))

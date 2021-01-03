@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.thyng.persistence.Repository;
 
-public interface SensorRepository extends Repository<Sensor, String> {
+public interface SensorRepository extends Repository<Sensor, Integer> {
 
-	List<Sensor> findByThingId(String thingId);
+	List<Sensor> findByThingId(Integer thingId);
 	
 }

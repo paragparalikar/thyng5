@@ -36,17 +36,17 @@ public class SensorController {
 	}
 
 	@GetMapping(params="thingId")
-	public List<Sensor> findByThingId(@RequestParam @NotBlank final String thingId){
+	public List<Sensor> findByThingId(@RequestParam @NotBlank final Integer thingId){
 		return sensorService.findByThingId(thingId);
 	}
 	
 	@GetMapping("/{id}")
-	public Sensor getOne(@PathVariable final String id) {
+	public Sensor getOne(@PathVariable final Integer id) {
 		return sensorService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final String id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final Integer id, @RequestParam final String name) {
 		return sensorService.existsByName(id, name);
 	}
 	
@@ -61,7 +61,7 @@ public class SensorController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final String id) {
+	public void delete(@PathVariable final Integer id) {
 		final Sensor sensor = sensorService.getOne(id);
 		sensorService.delete(sensor);
 	}

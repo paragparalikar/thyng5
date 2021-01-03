@@ -20,15 +20,15 @@ public class SensorDynamoRepository extends AbstractRepository<Sensor> implement
 	
 	@Override
 	protected boolean existsByName(Sensor entity, Sensor other, Tenant tenant) {
-		final String tenantId = null == tenant ? null : tenant.getId();
-		final String otherId = null == other ? null : other.getId();
+		final Integer tenantId = null == tenant ? null : tenant.getId();
+		final Integer otherId = null == other ? null : other.getId();
 		final String otherName = null == other ? null : other.getName();
-		final String otherThingId = null == other ? null : other.getThingId(); 
-		final String otherTenantId = null == other ? null : other.getTenantId();
-		final String entityId = null == entity ? null : entity.getId();
+		final Integer otherThingId = null == other ? null : other.getThingId(); 
+		final Integer otherTenantId = null == other ? null : other.getTenantId();
+		final Integer entityId = null == entity ? null : entity.getId();
 		final String entityName = null == entity ? null : entity.getName();
-		final String entityThingId = null == entity ? null : entity.getThingId();
-		final String entityTenantId = null == entity ? null : entity.getTenantId();
+		final Integer entityThingId = null == entity ? null : entity.getThingId();
+		final Integer entityTenantId = null == entity ? null : entity.getTenantId();
 		
 		if(null == tenantId) return
 				Objects.equals(entityThingId, otherThingId)
@@ -43,7 +43,7 @@ public class SensorDynamoRepository extends AbstractRepository<Sensor> implement
 	}
 
 	@Override
-	public List<Sensor> findByThingId(String thingId) {
+	public List<Sensor> findByThingId(Integer thingId) {
 		return findByPredicate(entry -> Objects.equals(thingId, entry.getValue().getThingId()));
 	}
 

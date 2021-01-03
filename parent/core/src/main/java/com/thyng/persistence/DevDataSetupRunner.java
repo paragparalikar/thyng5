@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import com.thyng.domain.sensor.Sensor;
 import com.thyng.domain.sensor.SensorRepository;
@@ -19,7 +20,7 @@ import com.thyng.domain.thing.ThingStatus;
 
 import lombok.RequiredArgsConstructor;
 
-//@Component
+@Component
 @Profile("dev")
 @RequiredArgsConstructor
 public class DevDataSetupRunner implements CommandLineRunner {
@@ -30,10 +31,21 @@ public class DevDataSetupRunner implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		thingRepository.findAll().stream()
-			.map(this::sensors)
-			.flatMap(Collection::stream)
-			.forEach(sensorRepository::save);
+		if(0 == tenantRepository.count()) {
+			tenants().forEach(tenantRepository::save);
+		}
+		if(0 == thingRepository.count()) {
+			tenantRepository.findAll().stream()
+				.map(this::things)
+				.flatMap(Collection::stream)
+				.forEach(thingRepository::save);
+		}
+		if(0 == sensorRepository.count()) {
+			thingRepository.findAll().stream()
+				.map(this::sensors)
+				.flatMap(Collection::stream)
+				.forEach(sensorRepository::save);
+		}
 	}
 	
 	private List<Sensor> sensors(final Thing thing){
@@ -55,7 +67,7 @@ public class DevDataSetupRunner implements CommandLineRunner {
 			final Thing thing = new Thing();
 			thing.setName("Thing-" + index);
 			thing.setTenantId(tenant.getId());
-			thing.setInactivityPeriod(60l + index);
+			thing.setInactivityPeriod(60 + index);
 			thing.setAttributes(attributes());
 			thing.setStatus(0 == index % 2 ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 			things.add(thing);

@@ -35,12 +35,12 @@ public class ThingController {
 	}
 
 	@GetMapping("/{id}")
-	public Thing getOne(@PathVariable final String id) {
+	public Thing getOne(@PathVariable final Integer id) {
 		return thingService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final String id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final Integer id, @RequestParam final String name) {
 		return thingService.existsByName(id, name);
 	}
 	
@@ -55,7 +55,7 @@ public class ThingController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final String id) {
+	public void delete(@PathVariable final Integer id) {
 		final Thing thing = thingService.getOne(id);
 		thingService.delete(thing);
 	}

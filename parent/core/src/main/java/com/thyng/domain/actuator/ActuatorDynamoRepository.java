@@ -19,15 +19,15 @@ public class ActuatorDynamoRepository extends AbstractRepository<Actuator> imple
 
 	@Override
 	protected boolean existsByName(Actuator entity, Actuator other, Tenant tenant) {
-		final String tenantId = null == tenant ? null : tenant.getId();
-		final String otherId = null == other ? null : other.getId();
+		final Integer tenantId = null == tenant ? null : tenant.getId();
+		final Integer otherId = null == other ? null : other.getId();
 		final String otherName = null == other ? null : other.getName();
-		final String otherThingId = null == other ? null : other.getThingId(); 
-		final String otherTenantId = null == other ? null : other.getTenantId();
-		final String entityId = null == entity ? null : entity.getId();
+		final Integer otherThingId = null == other ? null : other.getThingId(); 
+		final Integer otherTenantId = null == other ? null : other.getTenantId();
+		final Integer entityId = null == entity ? null : entity.getId();
 		final String entityName = null == entity ? null : entity.getName();
-		final String entityThingId = null == entity ? null : entity.getThingId();
-		final String entityTenantId = null == entity ? null : entity.getTenantId();
+		final Integer entityThingId = null == entity ? null : entity.getThingId();
+		final Integer entityTenantId = null == entity ? null : entity.getTenantId();
 		
 		if(null == tenantId) return
 				Objects.equals(entityThingId, otherThingId)

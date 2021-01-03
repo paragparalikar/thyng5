@@ -13,10 +13,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DynamoRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String> {
+public class DynamoRepository<T extends Identifiable<Integer> & Nameable> implements Repository<T, Integer> {
 
 	@Getter
-	protected final DynamoDBTableMapper<T, String, ?> mapper;
+	protected final DynamoDBTableMapper<T, Integer, ?> mapper;
 	
 	public void initialize() {
 		mapper.createTableIfNotExists(new ProvisionedThroughput(5L,5L));
@@ -28,8 +28,8 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 	}
 
 	@Override
-	public T getOne(String id) {
-		return mapper.load(id);
+	public T getOne(Integer id) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -44,15 +44,13 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 
 	@Override
 	public T save(T item) {
-		if(null != item.getId() && 0 == item.getId().trim().length()) item.setId(null);
 		mapper.save(item);
 		return item;
 	}
 	
 	@Override
-	public boolean existsByName(String id, String name) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean existsByName(Integer id, String name) {
+		throw new UnsupportedOperationException();
 	}
 	
 }

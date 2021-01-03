@@ -35,12 +35,12 @@ public class ActuatorController {
 	}
 
 	@GetMapping("/{id}")
-	public Actuator getOne(@PathVariable final String id) {
+	public Actuator getOne(@PathVariable final Integer id) {
 		return actuatorService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final String id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final Integer id, @RequestParam final String name) {
 		return actuatorService.existsByName(id, name);
 	}
 	
@@ -55,7 +55,7 @@ public class ActuatorController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final String id) {
+	public void delete(@PathVariable final Integer id) {
 		final Actuator actuator = actuatorService.getOne(id);
 		actuatorService.delete(actuator);
 	}
