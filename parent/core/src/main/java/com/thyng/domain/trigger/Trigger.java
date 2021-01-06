@@ -28,6 +28,8 @@ public class Trigger extends AbstractEntity {
 	@NotNull private Language language;
 	@NotNull private EventType eventType;
 	@Valid private Window window;
+	@NotBlank private String thingSelectionScript;
+	@NotBlank private String evaluationScript;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	
 }
