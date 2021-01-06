@@ -6,6 +6,8 @@ import com.thyng.domain.Identifiable;
 import com.thyng.domain.Nameable;
 
 public interface Repository<T extends Identifiable<ID> & Nameable, ID> {
+	
+	void initialize();
 
 	long count();
 	

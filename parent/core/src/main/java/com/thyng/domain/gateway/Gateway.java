@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.thyng.persistence.AbstractEntity;
+import com.thyng.domain.tenant.TenantAwareEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,12 +16,12 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @DynamoDBTable(tableName = Gateway.TABLE_NAME)
-public class Gateway extends AbstractEntity {
+public class Gateway extends TenantAwareEntity {
 	private static final long serialVersionUID = 6186495974401788683L;
 	public static final String TABLE_NAME = "gateway";
 
-	@DynamoDBRangeKey private Integer id;
-	@DynamoDBHashKey @NotNull @Positive private Integer tenantId;
+	@DynamoDBRangeKey private Long id;
+	@DynamoDBHashKey @NotNull @Positive private Long tenantId;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	private String publicKey;
 	private String privateKey;

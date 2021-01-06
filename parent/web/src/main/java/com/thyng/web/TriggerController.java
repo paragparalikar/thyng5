@@ -35,12 +35,12 @@ public class TriggerController {
 	}
 
 	@GetMapping("/{id}")
-	public Trigger getOne(@PathVariable final Integer id) {
+	public Trigger getOne(@PathVariable final Long id) {
 		return triggerService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final Integer id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final Long id, @RequestParam final String name) {
 		return triggerService.existsByName(id, name);
 	}
 	
@@ -55,7 +55,7 @@ public class TriggerController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final Integer id) {
+	public void delete(@PathVariable final Long id) {
 		final Trigger trigger = triggerService.getOne(id);
 		triggerService.delete(trigger);
 	}

@@ -1,44 +1,37 @@
-package com.thyng.persistence;
+package com.thyng.domain.tenant;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.hazelcast.aggregation.Aggregators;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.cp.IAtomicLong;
 import com.hazelcast.internal.util.StringUtil;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.Predicate;
 import com.thyng.domain.UnauthorizedActionException;
-import com.thyng.domain.tenant.Tenant;
-import com.thyng.domain.tenant.TenantContext;
+import com.thyng.persistence.CacheRepository;
+import com.thyng.persistence.DynamoRepository;
 
-public class AbstractRepository<T extends AbstractEntity> implements Repository<T, Integer> {
+import lombok.NonNull;
+
+public class TenantAwareRepository<T extends TenantAwareEntity> extends CacheRepository<T> {
 	
-	private final IMap<Integer, T> cache;
-	private final DynamoRepository<T> dynamoRepository;
-	private final CacheRepository<T> cacheRepository;
+	private IMap<Long, T> cache;
 	
-	public AbstractRepository(String tableName, Class<T> type, DynamoDBMapper mapper, HazelcastInstance hazelcastInstance) {
-		this.cache = hazelcastInstance.getMap(tableName);
-		final String idProviderName = String.join("-", tableName, "id", "provider");
-		final IAtomicLong idProvider = hazelcastInstance.getCPSubsystem().getAtomicLong(idProviderName);
-		dynamoRepository = new DynamoRepository<>(mapper.newTableMapper(type));
-		cacheRepository = new CacheRepository<>(cache, idProvider, dynamoRepository);
+	public TenantAwareRepository(String tableName, Class<T> type, DynamoDBMapper mapper, HazelcastInstance hazelcastInstance) {
+		super(tableName, new DynamoRepository<>(mapper.newTableMapper(type)), hazelcastInstance);
 	}
-
-	@PostConstruct
+	
+	@Override
 	public void initialize() {
-		dynamoRepository.initialize();
-		cacheRepository.initialize();
+		super.initialize();
+		this.cache = super.getCache();
 	}
 	
 	private T verifyTenant(T item) {
-		final Integer tenantId = null == item ? null : item.getTenantId();
+		final Long tenantId = null == item ? null : item.getTenantId();
 		final Tenant tenant = TenantContext.getTenant();
 		if(null != tenantId && null != tenant && !tenantId.equals(tenant.getId())) {
 			final String message = String.format("Can not operate with tenant id %d winthin "
@@ -48,59 +41,59 @@ public class AbstractRepository<T extends AbstractEntity> implements Repository<
 		return item;
 	}
 	
-	private Predicate<Integer, T> tenantPredicate(){
+	private Predicate<Long, T> tenantPredicate(){
 		final Tenant tenant = TenantContext.getTenant();
 		return null == tenant ? entry -> Boolean.TRUE : 
-			entry -> tenant.getId().equals(AbstractEntity.class.cast(entry.getValue()).getTenantId());
+			entry -> tenant.getId().equals(TenantAwareEntity.class.cast(entry.getValue()).getTenantId());
 	}
 	
 	public long count() {
 		return cache.aggregate(Aggregators.count(), tenantPredicate());
 	}
 
-	public T getOne(Integer id) {
-		return verifyTenant(cacheRepository.getOne(id));
+	public T getOne(@NonNull Long id) {
+		return verifyTenant(super.getOne(id));
 	}
 
-	public void delete(T item) {
-		cacheRepository.delete(verifyTenant(item));
+	public void delete(@NonNull T item) {
+		super.delete(verifyTenant(item));
 	}
 
 	public List<T> findAll() {
 		return new ArrayList<>(cache.values(tenantPredicate()));
 	}
 	
-	protected List<T> findByPredicate(Predicate<Integer, T> predicate){
-		final Predicate<Integer, T> tenantPredicate = tenantPredicate();
-		final Predicate<Integer, T> compositePredicate = entry -> tenantPredicate.apply(entry) && predicate.apply(entry);
+	protected List<T> findByPredicate(Predicate<Long, T> predicate){
+		final Predicate<Long, T> tenantPredicate = tenantPredicate();
+		final Predicate<Long, T> compositePredicate = entry -> tenantPredicate.apply(entry) && predicate.apply(entry);
 		return new ArrayList<>(cache.values(compositePredicate));
 	}
 
-	public T save(T item) {
-		final Integer tenantId = item.getTenantId();
+	public T save(@NonNull T item) {
+		final Long tenantId = item.getTenantId();
 		final Tenant tenant = TenantContext.getTenant();
 		if(null == tenantId && null == tenant) {
 			throw new IllegalStateException("Tenant not available in item and context");
 		} else if(null == tenantId && null != tenant) {
 			item.setTenantId(tenant.getId());
 		}
-		return cacheRepository.save(verifyTenant(item));
+		return super.save(verifyTenant(item));
 	}
 
-	public boolean existsByName(Integer id, String name) {
+	public boolean existsByName(@NonNull Long id,@NonNull String name) {
 		final T entity = cache.get(id);
 		final Tenant tenant = TenantContext.getTenant();
 		return 0 < cache.aggregate(Aggregators.count(), entry -> existsByName(entity, entry.getValue(), tenant));
 	}
 	
 	protected boolean existsByName(T entity, T other, Tenant tenant) {
-		final Integer tenantId = null == tenant ? null : tenant.getId();
-		final Integer otherId = null == other ? null : other.getId();
+		final Long tenantId = null == tenant ? null : tenant.getId();
+		final Long otherId = null == other ? null : other.getId();
 		final String otherName = null == other ? null : other.getName();
-		final Integer otherTenantId = null == other ? null : other.getTenantId();
-		final Integer entityId = null == entity ? null : entity.getId();
+		final Long otherTenantId = null == other ? null : other.getTenantId();
+		final Long entityId = null == entity ? null : entity.getId();
 		final String entityName = null == entity ? null : entity.getName();
-		final Integer entityTenantId = null == entity ? null : entity.getTenantId();
+		final Long entityTenantId = null == entity ? null : entity.getTenantId();
 		
 		if(null == tenantId) return !Objects.equals(entityId, otherId) 
 				&& StringUtil.equalsIgnoreCase(entityName, otherName);

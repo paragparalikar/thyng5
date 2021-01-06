@@ -3,17 +3,18 @@ package com.thyng.persistence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.thyng.domain.sensor.Sensor;
-import com.thyng.domain.sensor.SensorRepository;
 import com.thyng.domain.tenant.Tenant;
 import com.thyng.domain.tenant.TenantRepository;
+import com.thyng.domain.thing.Sensor;
 import com.thyng.domain.thing.Thing;
 import com.thyng.domain.thing.ThingRepository;
 import com.thyng.domain.thing.ThingStatus;
@@ -27,7 +28,6 @@ public class DevDataSetupRunner implements CommandLineRunner {
 
 	private final ThingRepository thingRepository;
 	private final TenantRepository tenantRepository;
-	private final SensorRepository sensorRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -40,21 +40,13 @@ public class DevDataSetupRunner implements CommandLineRunner {
 				.flatMap(Collection::stream)
 				.forEach(thingRepository::save);
 		}
-		if(0 == sensorRepository.count()) {
-			thingRepository.findAll().stream()
-				.map(this::sensors)
-				.flatMap(Collection::stream)
-				.forEach(sensorRepository::save);
-		}
 	}
 	
-	private List<Sensor> sensors(final Thing thing){
-		final List<Sensor> sensors = new ArrayList<>(5);
+	private Set<Sensor> sensors(final Thing thing){
+		final Set<Sensor> sensors = new HashSet<>(5);
 		for(int index = 0; index < 10; index++) {
 			final Sensor sensor = new Sensor();
 			sensor.setName("Sensor-"+index);
-			sensor.setTenantId(thing.getTenantId());
-			sensor.setThingId(thing.getId());
 			sensor.setUnit("mm");
 			sensors.add(sensor);
 		}
@@ -69,6 +61,7 @@ public class DevDataSetupRunner implements CommandLineRunner {
 			thing.setTenantId(tenant.getId());
 			thing.setInactivityPeriod(60 + index);
 			thing.setAttributes(attributes());
+			thing.setSensors(sensors(thing));
 			thing.setStatus(0 == index % 2 ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 			things.add(thing);
 		}
