@@ -6,6 +6,8 @@ import java.util.function.Predicate;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.util.StringUtils;
+
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.lock.FencedLock;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
@@ -20,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class CacheRepository<T extends Identifiable<Long> & Nameable> implements Repository<T, Long>{
+public class CacheRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String>{
 
-	private IMap<Long, T> cache;
+	private IMap<String, T> cache;
 	private FlakeIdGenerator idGenerator;
 	
 	@NonNull private final String cacheName;
-	@NonNull private final Repository<T, Long> delegate;
+	@NonNull private final Repository<T, String> delegate;
 	@NonNull private final HazelcastInstance hazelcastInstance;
 	
 	@PostConstruct
@@ -50,8 +52,7 @@ public class CacheRepository<T extends Identifiable<Long> & Nameable> implements
 	}
 	
 	protected void cache(T item) {
-		final Long id = item.getId();
-		cache.put(id, item);
+		cache.put(item.getId(), item);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class CacheRepository<T extends Identifiable<Long> & Nameable> implements
 	}
 
 	@Override
-	public T getOne(Long id) {
+	public T getOne(String id) {
 		return cache.get(id);
 	}
 
@@ -77,14 +78,16 @@ public class CacheRepository<T extends Identifiable<Long> & Nameable> implements
 
 	@Override
 	public T save(T item) {
-		if(null == item.getId() || 0 == item.getId()) item.setId(idGenerator.newId());
+		if(!StringUtils.hasText(item.getId()) || "0".equals(item.getId().trim())) {
+			item.setId(Long.toUnsignedString(idGenerator.newId(), Character.MAX_RADIX));
+		}
 		final T saved = delegate.save(item);
 		cache.put(saved.getId(), saved);
 		return saved;
 	}
 	
 	@Override
-	public boolean existsByName(Long id, String name) {
+	public boolean existsByName(String id, String name) {
 		final String trimmedName = name.trim();
 		return cache.values().stream()
 				.filter(entity -> trimmedName.equalsIgnoreCase(entity.getName().trim()))

@@ -13,10 +13,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DynamoRepository<T extends Identifiable<Long> & Nameable> implements Repository<T, Long> {
+public class DynamoRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String> {
 
 	@Getter
-	protected final DynamoDBTableMapper<T, Integer, ?> mapper;
+	protected final DynamoDBTableMapper<T, String, ?> mapper;
 	
 	@Override
 	public void initialize() {
@@ -29,7 +29,7 @@ public class DynamoRepository<T extends Identifiable<Long> & Nameable> implement
 	}
 
 	@Override
-	public T getOne(Long id) {
+	public T getOne(String id) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -50,7 +50,7 @@ public class DynamoRepository<T extends Identifiable<Long> & Nameable> implement
 	}
 	
 	@Override
-	public boolean existsByName(Long id, String name) {
+	public boolean existsByName(String id, String name) {
 		throw new UnsupportedOperationException();
 	}
 	

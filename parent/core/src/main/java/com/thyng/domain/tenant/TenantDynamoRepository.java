@@ -16,7 +16,7 @@ public class TenantDynamoRepository extends CacheRepository<Tenant> implements T
 	}
 
 	@Override
-	public boolean existsByName(Long id, String name) {
+	public boolean existsByName(String id, String name) {
 		return 0 < getCache().aggregate(Aggregators.count(), entry -> {
 			final Tenant tenant = Tenant.class.cast(entry.getValue());
 			return !tenant.getId().equals(id) && tenant.getName().trim().equalsIgnoreCase(name.trim());

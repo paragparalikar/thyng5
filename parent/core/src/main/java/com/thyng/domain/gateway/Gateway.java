@@ -20,8 +20,8 @@ public class Gateway extends TenantAwareEntity {
 	private static final long serialVersionUID = 6186495974401788683L;
 	public static final String TABLE_NAME = "gateway";
 
-	@DynamoDBRangeKey private Long id;
-	@DynamoDBHashKey @NotNull @Positive private Long tenantId;
+	@DynamoDBRangeKey private String id;
+	@DynamoDBHashKey @NotNull @Positive private String tenantId;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	private String publicKey;
 	private String privateKey;

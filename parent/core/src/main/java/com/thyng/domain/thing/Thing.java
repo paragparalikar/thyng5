@@ -28,8 +28,8 @@ public class Thing extends TenantAwareEntity {
 	private static final long serialVersionUID = -2269905804622007163L;
 	public static final String TABLE_NAME = "thing";
 
-	@DynamoDBRangeKey private Long id;
-	@DynamoDBHashKey @NotNull @Positive private Long tenantId;
+	@DynamoDBRangeKey private String id;
+	@DynamoDBHashKey @NotNull @Positive private String tenantId;
 	
 	@NotNull @Min(60) private Integer inactivityPeriod;
 	@NotBlank @Size(min = 3, max = 255) private String name;

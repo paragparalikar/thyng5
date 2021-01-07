@@ -2,8 +2,8 @@ package com.thyng.domain.tenant;
 
 public interface TenantAware {
 
-	Long getTenantId();
+	String getTenantId();
 	
-	void setTenantId(Long tenantId);
+	void setTenantId(String tenantId);
 	
 }

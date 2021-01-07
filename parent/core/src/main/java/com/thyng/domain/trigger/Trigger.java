@@ -22,8 +22,8 @@ public class Trigger extends TenantAwareEntity {
 	private static final long serialVersionUID = 8755396643820803042L;
 	public static final String TABLE_NAME = "trigger";
 
-	@DynamoDBRangeKey private Long id;
-	@DynamoDBHashKey @NotNull @Positive private Long tenantId;
+	@DynamoDBRangeKey private String id;
+	@DynamoDBHashKey @NotNull @Positive private String tenantId;
 	@NotNull private Boolean enabled;
 	@NotNull private Language language;
 	@NotNull private EventType eventType;

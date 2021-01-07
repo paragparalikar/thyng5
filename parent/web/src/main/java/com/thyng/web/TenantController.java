@@ -35,12 +35,12 @@ public class TenantController {
 	}
 
 	@GetMapping("/{id}")
-	public Tenant getOne(@PathVariable final Long id) {
+	public Tenant getOne(@PathVariable final String id) {
 		return tenantService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final Long id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final String id, @RequestParam final String name) {
 		return tenantService.existsByName(id, name);
 	}
 	
@@ -56,7 +56,7 @@ public class TenantController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final Long id) {
+	public void delete(@PathVariable final String id) {
 		final Tenant tenant = tenantService.getOne(id);
 		tenantService.delete(tenant);
 	}

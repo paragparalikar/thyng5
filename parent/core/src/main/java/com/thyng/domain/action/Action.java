@@ -20,8 +20,8 @@ public class Action extends TenantAwareEntity{
 	private static final long serialVersionUID = -2403149493576305238L;
 	public static final String TABLE_NAME = "action";
 
-	@DynamoDBRangeKey private Long id;
-	@DynamoDBHashKey @NotNull @Positive private Long tenantId;
+	@DynamoDBRangeKey private String id;
+	@DynamoDBHashKey @NotNull @Positive private String tenantId;
 	@NotNull private Boolean enabled;
 	@NotNull private ActionType actionType;
 	@NotBlank @Size(min = 3, max = 255) private String name;

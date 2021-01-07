@@ -17,11 +17,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @DynamoDBTable(tableName = Tenant.TABLE_NAME)
 @EqualsAndHashCode(callSuper = false, of={"id", "name"})
-public class Tenant implements Identifiable<Long>, Nameable, Serializable {
+public class Tenant implements Identifiable<String>, Nameable, Serializable {
 	private static final long serialVersionUID = -4444782720017595800L;
 	public static final String TABLE_NAME = "tenant";
 
-	@DynamoDBHashKey private Long id;
+	@DynamoDBHashKey private String id;
 	@NotNull private Boolean enabled = Boolean.TRUE;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	

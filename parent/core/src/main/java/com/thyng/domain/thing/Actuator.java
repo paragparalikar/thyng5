@@ -14,7 +14,7 @@ import lombok.Data;
 public class Actuator implements Serializable {
 	private static final long serialVersionUID = -7972853698613197304L;
 
-	private Long id;
+	private String id;
 	@NotBlank @Size(min = 3, max = 255) private String name;
 	
 }

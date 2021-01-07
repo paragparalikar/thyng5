@@ -35,12 +35,12 @@ public class GatewayController {
 	}
 
 	@GetMapping("/{id}")
-	public Gateway getOne(@PathVariable final Long id) {
+	public Gateway getOne(@PathVariable final String id) {
 		return gatewayService.getOne(id);
 	}
 	
 	@GetMapping(params = {"id","name"})
-	public Boolean existsByName(@RequestParam final Long id, @RequestParam final String name) {
+	public Boolean existsByName(@RequestParam final String id, @RequestParam final String name) {
 		return gatewayService.existsByName(id, name);
 	}
 	
@@ -55,7 +55,7 @@ public class GatewayController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable final Long id) {
+	public void delete(@PathVariable final String id) {
 		final Gateway gateway = gatewayService.getOne(id);
 		gatewayService.delete(gateway);
 	}
