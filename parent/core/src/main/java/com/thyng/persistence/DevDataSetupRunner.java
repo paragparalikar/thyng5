@@ -44,7 +44,7 @@ public class DevDataSetupRunner implements CommandLineRunner {
 	
 	private Set<Sensor> sensors(final Thing thing){
 		final Set<Sensor> sensors = new HashSet<>(5);
-		for(int index = 0; index < 10; index++) {
+		for(int index = 0; index < 4; index++) {
 			final Sensor sensor = new Sensor();
 			sensor.setName("Sensor-"+index);
 			sensor.setUnit("mm");

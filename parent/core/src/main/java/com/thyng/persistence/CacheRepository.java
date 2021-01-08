@@ -2,6 +2,8 @@ package com.thyng.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.annotation.PostConstruct;
@@ -9,8 +11,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.util.StringUtils;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.cp.IAtomicLong;
 import com.hazelcast.cp.lock.FencedLock;
-import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.map.IMap;
 import com.thyng.domain.Identifiable;
 import com.thyng.domain.Nameable;
@@ -25,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class CacheRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String>{
 
 	private IMap<String, T> cache;
-	private FlakeIdGenerator idGenerator;
+	private IAtomicLong idProvider;
 	
 	@NonNull private final String cacheName;
 	@NonNull private final Repository<T, String> delegate;
@@ -35,24 +37,26 @@ public class CacheRepository<T extends Identifiable<String> & Nameable> implemen
 	public void initialize() {
 		delegate.initialize();
 		this.cache = hazelcastInstance.getMap(cacheName);
-		this.idGenerator = hazelcastInstance.getFlakeIdGenerator(Names.idGenerator(cacheName));
-		load();
+		this.idProvider = hazelcastInstance.getCPSubsystem().getAtomicLong(Names.idGenerator(cacheName));
+		load(item -> cache.put(item.getId(), item));
 	}
-	
-	protected void load() {
+
+	protected void load(Consumer<T> consumer) {
 		final FencedLock lock = hazelcastInstance.getCPSubsystem().getLock(Names.lock(cacheName));
 		if(cache.isEmpty() && lock.tryLock()) {
 			try {
-				delegate.findAll().forEach(this::cache);
+				final AtomicLong maxId = new AtomicLong(0);
+				delegate.findAll().forEach(consumer.andThen(item -> {
+					final long id = Long.parseUnsignedLong(item.getId(), Character.MAX_RADIX);
+					maxId.updateAndGet(value -> Math.max(value, id));
+				}));
+				final long maxIdValue = maxId.get();
+				idProvider.alter(value -> Math.max(value, maxIdValue));
 			} finally {
 				lock.unlock();
 				lock.destroy();
 			}
 		}
-	}
-	
-	protected void cache(T item) {
-		cache.put(item.getId(), item);
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class CacheRepository<T extends Identifiable<String> & Nameable> implemen
 	@Override
 	public T save(T item) {
 		if(!StringUtils.hasText(item.getId()) || "0".equals(item.getId().trim())) {
-			item.setId(Long.toUnsignedString(idGenerator.newId(), Character.MAX_RADIX));
+			item.setId(Long.toUnsignedString(idProvider.incrementAndGet(), Character.MAX_RADIX));
 		}
 		final T saved = delegate.save(item);
 		cache.put(saved.getId(), saved);
