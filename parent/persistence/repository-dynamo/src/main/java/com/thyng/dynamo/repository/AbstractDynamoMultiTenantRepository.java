@@ -91,11 +91,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 			.tableName(tableName)
 			.item(map(entity))
 			.build()).whenCompleteAsync((response, throwable) -> {
-				if(null != throwable) log.error("Failed to save {} for tenantId {} with exception {}", 
-						tableName, entity.getTenantId(), throwable.getMessage());
-				final T item = null == response ? null : map(response.attributes());
-				callback.after(item, throwable);
-				if(null == throwable) log.info("Saved {} with success {} and failure {}", tableName, item, throwable);
+				callback.after(null == throwable ? entity : null, throwable);
 			});
 	}
 

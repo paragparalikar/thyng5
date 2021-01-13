@@ -15,7 +15,9 @@ import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class DevDataLoader implements Runnable {
 
@@ -38,6 +40,7 @@ public class DevDataLoader implements Runnable {
 		tenants().forEach(tenant -> {
 			context.getTenantRepository().save(tenant, Callback.<Tenant>builder()
 				.success(value -> {
+					log.info("Created tenant {}", value);
 					createTemplates(value);
 				})
 				.build());
@@ -58,6 +61,7 @@ public class DevDataLoader implements Runnable {
 		templates(tenant).forEach(template -> {
 			context.getTemplateRepository().save(template, Callback.<Template>builder()
 					.success(value -> {
+						log.info("Created template {}", value);
 						createSensors(value);
 						createActuators(value);
 						createThings(value);
@@ -87,7 +91,9 @@ public class DevDataLoader implements Runnable {
 	
 	private void createSensors(Template template) {
 		sensors(template).forEach(sensor -> {
-			context.getSensorRepository().save(sensor, Callback.<Sensor>builder().build());
+			context.getSensorRepository().save(sensor, Callback.<Sensor>builder()
+					.success(value -> log.info("Created sensor {}", value))
+					.build());
 		});
 	}
 	
@@ -104,7 +110,9 @@ public class DevDataLoader implements Runnable {
 	
 	private void createActuators(Template template) {
 		actuators(template).forEach(actuator -> {
-			context.getActuatorRepository().save(actuator, Callback.<Actuator>builder().build());
+			context.getActuatorRepository().save(actuator, Callback.<Actuator>builder()
+					.success(value -> log.info("Created actuator {}", value))
+					.build());
 		});
 	}
 	
@@ -120,7 +128,9 @@ public class DevDataLoader implements Runnable {
 	
 	private void createThings(Template template) {
 		things(template).forEach(thing -> {
-			context.getThingRepository().save(thing, Callback.<Thing>builder().build());
+			context.getThingRepository().save(thing, Callback.<Thing>builder()
+					.success(value -> log.info("Created thing {}", value))
+					.build());
 		});
 	}
 	

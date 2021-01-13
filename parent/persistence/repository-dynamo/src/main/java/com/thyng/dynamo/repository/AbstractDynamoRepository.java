@@ -12,7 +12,6 @@ import com.thyng.domain.intf.Callback;
 import com.thyng.repository.Repository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
@@ -21,7 +20,6 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.Select;
 
-@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractDynamoRepository<T> implements Repository<T, String> {
 
@@ -65,9 +63,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 				.tableName(tableName)
 				.item(map(entity))
 				.build()).whenCompleteAsync((response, throwable) -> {
-					final T item = null == response ? null : map(response.attributes()); 
-					callback.after(item, throwable);
-					log.info("Saved {} with success {} and failure {}", tableName, item, throwable);
+					callback.after(null == throwable ? entity : null, throwable);
 				});
 	}
 
@@ -94,7 +90,6 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 			final T item = null == response || null == response.attributes() ? 
 					null : map(response.attributes()); 
 			callback.after(item, throwable); 
-			log.info("Deleted	 {} with success {} and failure {}", tableName, item, throwable);
 		});
 	}
 	

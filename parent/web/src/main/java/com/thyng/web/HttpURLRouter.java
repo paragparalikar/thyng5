@@ -40,10 +40,8 @@ public class HttpURLRouter extends MessageToMessageDecoder<HttpRequest> implemen
 	
 	@Override
 	protected void decode(ChannelHandlerContext ctx, HttpRequest msg, List<Object> out) throws Exception {
-		System.out.println(msg.uri());
 		final String[] tokens = msg.uri().split("/");
 		final String token = 1 < tokens.length && StringUtil.isNotEmpty(tokens[1]) ? tokens[1] : null;
-		System.out.println(token);
 		if(null == token) {
 			// Home page handler
 			ctx.pipeline().addLast(new NotFoundHandler());
