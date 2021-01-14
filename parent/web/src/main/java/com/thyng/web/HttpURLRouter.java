@@ -3,6 +3,7 @@ package com.thyng.web;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.aws.utility.StringUtil;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Sharable
 @RequiredArgsConstructor
 public class HttpURLRouter extends MessageToMessageDecoder<HttpRequest> implements Lifecycle {
+	private static final String NAME = "thyng-request-handler";
 
 	private final Context context;
 	private final ObjectMapper objectMapper;
@@ -40,20 +42,29 @@ public class HttpURLRouter extends MessageToMessageDecoder<HttpRequest> implemen
 	
 	@Override
 	protected void decode(ChannelHandlerContext ctx, HttpRequest msg, List<Object> out) throws Exception {
+		clean(ctx);
 		final String[] tokens = msg.uri().split("/");
 		final String token = 1 < tokens.length && StringUtil.isNotEmpty(tokens[1]) ? tokens[1] : null;
 		if(null == token) {
-			// Home page handler
-			ctx.pipeline().addLast(new NotFoundHandler());
+			ctx.pipeline().addLast(NAME, new NotFoundHandler()); // Home page handler
 		} else {
 			final MultiTenantRepository<?> repository = repositories.get(token);
 			if(null == repository) {
-				ctx.pipeline().addLast(new NotFoundHandler());
+				ctx.pipeline().addLast(NAME, new NotFoundHandler());
 			} else {
-				ctx.pipeline().addLast(new MultiTenantHttpRequestHandler<>(objectMapper, repository));
+				ctx.pipeline().addLast(NAME, new MultiTenantHttpRequestHandler<>(objectMapper, repository));
 			}
 		}
 		out.add(msg);
+		ctx.flush();
 	}
 
+	private void clean(ChannelHandlerContext ctx) {
+		try {
+			ctx.pipeline().remove(NAME);
+		} catch (NoSuchElementException ignored) {
+			
+		}
+	}
+	
 }
