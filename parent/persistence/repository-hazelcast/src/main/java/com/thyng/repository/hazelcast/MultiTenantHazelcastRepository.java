@@ -22,7 +22,6 @@ import com.thyng.repository.MultiTenantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-//@Slf4j
 @RequiredArgsConstructor
 public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implements MultiTenantRepository<T> {
 
@@ -44,28 +43,26 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 	protected void load() {
 		final FencedLock lock = hazelcastInstance.getCPSubsystem().getLock(HazelcastNames.lock(cacheName));
 		if(cache.isEmpty() && lock.tryLock()) {
-			final AtomicLong maxId = new AtomicLong(0);
 			final CountDownLatch latch = new CountDownLatch(1);
 			delegate.findAll(Callback.<List<T>>builder()
-					.partial(items -> {
-						items.forEach(item -> {
-							cache.put(item.getId(), item);
-							final long id = Long.parseUnsignedLong(item.getId(), Character.MAX_RADIX);
-							maxId.updateAndGet(value -> Math.max(value, id));
-						});
-					})
-					.success(none -> {
-						final long maxIdValue = maxId.get();
-						idProvider.alter(value -> Math.max(value, maxIdValue));
-					})
-					.after(() -> {
-						latch.countDown();
-					})
-					.build());
+				.success(this::cache)
+				.after(() -> latch.countDown())
+				.build());
 			latch.await();
 			lock.unlock();
 			lock.destroy();
 		}
+	}
+	
+	protected void cache(List<T> items) {
+		final AtomicLong maxId = new AtomicLong(0);
+		items.forEach(item -> {
+			cache.put(item.getId(), item);
+			final long id = Long.parseUnsignedLong(item.getId(), Character.MAX_RADIX);
+			maxId.updateAndGet(value -> Math.max(value, id));
+		});
+		final long maxIdValue = maxId.get();
+		idProvider.alter(value -> Math.max(value, maxIdValue));
 	}
 	
 	protected String nextId() {
@@ -108,7 +105,6 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 		verifyTenant(tenantId, cache.get(id));
 		delegate.deleteById(tenantId, id, Callback.<T>builder()
 				.after(callback.getAfter())
-				.partial(callback.getPartial())
 				.failure(callback.getFailure())
 				.success(value -> {
 					cache.remove(id);
@@ -123,7 +119,6 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 			entity.setId(nextId());
 		}
 		delegate.save(entity, Callback.<T>builder()
-				.partial(callback.getPartial())
 				.failure(callback.getFailure())
 				.after(callback.getAfter())
 				.success(item -> {

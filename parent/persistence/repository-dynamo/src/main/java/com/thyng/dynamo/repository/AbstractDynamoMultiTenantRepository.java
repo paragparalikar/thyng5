@@ -2,12 +2,12 @@ package com.thyng.dynamo.repository;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import com.thyng.domain.intf.Callback;
 import com.thyng.domain.intf.TenantAwareModel;
@@ -59,12 +59,11 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 				.tableName(tableName)
 				.select(Select.ALL_ATTRIBUTES)
 				.build();
+		final List<T> items = new LinkedList<>();
 		client.scanPaginator(request).subscribe(response -> {
-			callback.partial(response.items().stream().map(this::map).collect(Collectors.toList()));
+			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			if(null != throwable) log.error("Failed to find all {} with exception {}", 
-					tableName, throwable.getMessage());
-			callback.after(null, throwable);
+			callback.after(null == throwable ? items : null, throwable);
 		});
 	}
 	
@@ -76,12 +75,11 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 				.keyConditionExpression("tenantId = :tenantId")
 				.expressionAttributeValues(Collections.singletonMap(":tenantId", AttributeValue.builder().s(tenantId).build()))
 				.build();
+		final List<T> items = new LinkedList<>();
 		client.queryPaginator(queryRequest).subscribe(response -> {
-			callback.partial(response.items().stream().map(this::map).collect(Collectors.toList()));
+			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			if(null != throwable) log.error("Failed to find all {} for tenantId {} with exception {}", 
-					tableName, tenantId, throwable.getMessage());
-			callback.after(null, throwable);
+			callback.after(null == throwable ? items : null, throwable);
 		});
 	}
 

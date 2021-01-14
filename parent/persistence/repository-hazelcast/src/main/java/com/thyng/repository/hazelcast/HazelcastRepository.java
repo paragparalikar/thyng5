@@ -50,14 +50,12 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 			final AtomicLong maxId = new AtomicLong(0);
 			final CountDownLatch latch = new CountDownLatch(1);
 			delegate.findAll(Callback.<List<T>>builder()
-					.partial(items -> {
+					.success(items -> {
 						items.forEach(item -> {
 							cache.put(item.getId(), item);
 							final long id = Long.parseUnsignedLong(item.getId(), Character.MAX_RADIX);
 							maxId.updateAndGet(value -> Math.max(value, id));
 						});
-					})
-					.success(none -> {
 						final long maxIdValue = maxId.get();
 						idProvider.alter(value -> Math.max(value, maxIdValue));
 					})
@@ -83,7 +81,6 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 	@Override
 	public void deleteById(String id, Callback<T> callback) {
 		delegate.deleteById(id, Callback.<T>builder()
-				.partial(callback.getPartial())
 				.success(item -> {
 					Optional.ofNullable(item).ifPresent(i -> cache.remove(item.getId()));
 					callback.getSuccess().accept(item);
@@ -95,8 +92,7 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 	
 	@Override
 	public void findAll(Callback<List<T>> callback) {
-		callback.partial(new ArrayList<>(cache.values()));
-		callback.after(null, null);
+		callback.after(new ArrayList<>(cache.values()), null);
 	}
 	
 	@Override
@@ -113,7 +109,6 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 					cache.put(item.getId(), item);
 					callback.getSuccess().accept(item);
 				})
-				.partial(callback.getPartial())
 				.failure(callback.getFailure())
 				.after(callback.getAfter())
 				.build());

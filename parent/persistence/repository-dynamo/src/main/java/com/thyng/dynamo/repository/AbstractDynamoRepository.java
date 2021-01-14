@@ -1,12 +1,12 @@
 package com.thyng.dynamo.repository;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import com.thyng.domain.intf.Callback;
 import com.thyng.repository.Repository;
@@ -50,10 +50,11 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 				.tableName(tableName)
 				.select(Select.ALL_ATTRIBUTES)
 				.build();
+		final List<T> items = new LinkedList<>();
 		client.scanPaginator(request).subscribe(response -> {
-			callback.partial(response.items().stream().map(this::map).collect(Collectors.toList()));
+			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			callback.after(null, throwable);
+			callback.after(null == throwable ? items : null, throwable);
 		});
 	}
 
