@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Module;
+import com.thyng.web.handler.rest.RequestRouterHandler;
+import com.thyng.web.handler.rest.RestRequestDecoder;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -19,8 +21,8 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 	
 	private final Context context = new Context();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final HttpURLRouter router = new HttpURLRouter(context, objectMapper);
 	private final List<Module> modules = new LinkedList<>();
+	private final RequestRouterHandler requestRouterHandler = new RequestRouterHandler(context, objectMapper);
 
 	public ServerInitializer() {
 		ServiceLoader.load(Module.class).forEach(modules::add);
@@ -34,7 +36,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 			module.start();
 		}
 		context.start();
-		router.start();
+		requestRouterHandler.start();
 		new DevDataLoader(context).run();
 	}
 	
@@ -52,7 +54,8 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 		channel.pipeline()
 			.addLast(new HttpServerCodec())
 			.addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
-			.addLast(router);
+			.addLast(new RestRequestDecoder())
+			.addLast(requestRouterHandler);
 	}
 
 }

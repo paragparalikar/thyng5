@@ -1,13 +1,9 @@
-package com.thyng.repository;
+package com.thyng;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.thyng.AsyncCrud;
-import com.thyng.Callback;
-import com.thyng.domain.intf.Lifecycle;
-
-public interface Repository<T, ID> extends AsyncCrud<T, ID>, Lifecycle {
+public interface AsyncCrud<T, ID> {
 	
 	void count(Callback<Long> callback);
 	
@@ -20,5 +16,5 @@ public interface Repository<T, ID> extends AsyncCrud<T, ID>, Lifecycle {
 	void deleteById(ID id, Callback<T> callback);
 	
 	void existsByName(String id, String name, Callback<Boolean> callback);
-	
+
 }
