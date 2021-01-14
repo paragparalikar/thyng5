@@ -23,6 +23,7 @@ public class NettyWebServer {
 				.group(bossGroup, workerGroup)
 				.channel(NioServerSocketChannel.class)
 				.handler(loggingHandler)
+				.childOption(ChannelOption.SO_KEEPALIVE, true)
 				.childHandler(serverInitializer)
 					.bind(8080).sync().channel().closeFuture()
 					.addListener(future -> shutdown(serverInitializer))

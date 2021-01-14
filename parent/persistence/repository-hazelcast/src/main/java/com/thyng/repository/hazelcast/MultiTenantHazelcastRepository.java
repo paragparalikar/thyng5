@@ -50,7 +50,6 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 				.build());
 			latch.await();
 			lock.unlock();
-			lock.destroy();
 		}
 	}
 	

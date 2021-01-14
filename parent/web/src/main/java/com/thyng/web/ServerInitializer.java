@@ -12,8 +12,8 @@ import com.thyng.domain.intf.Module;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> implements Lifecycle {
 	
@@ -51,7 +51,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 	protected void initChannel(SocketChannel channel) throws Exception {
 		channel.pipeline()
 			.addLast(new HttpServerCodec())
-			.addLast(new HttpServerExpectContinueHandler())
+			.addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
 			.addLast(router);
 	}
 

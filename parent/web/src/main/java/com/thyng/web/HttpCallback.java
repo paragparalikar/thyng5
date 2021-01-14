@@ -35,7 +35,7 @@ public class HttpCallback<T> extends Callback<T> {
 				.set(CONNECTION, KEEP_ALIVE)
 				.set(CONTENT_TYPE, APPLICATION_JSON)
 				.setInt(CONTENT_LENGTH, response.content().readableBytes());
-		ctx.write(response);
+		ctx.writeAndFlush(response);
 	}
 	
 	@Override

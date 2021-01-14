@@ -65,7 +65,6 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 					.build());
 			latch.await();
 			lock.unlock();
-			lock.destroy();
 		}
 	}
 	

@@ -12,28 +12,34 @@ import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.repository.MultiTenantRepository;
 import com.thyng.web.HttpCallback;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
-public class MultiTenantHttpRequestHandler<T extends TenantAwareModel> extends SimpleChannelInboundHandler<HttpRequest> {
+@Sharable
+public class MultiTenantHttpRequestHandler<T extends TenantAwareModel> extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 	private final ObjectMapper objectMapper;
 	private final MultiTenantRepository<T> repository;
+	
+	public MultiTenantHttpRequestHandler(ObjectMapper objectMapper, MultiTenantRepository<T> repository) {
+		super(true);
+		this.repository = repository;
+		this.objectMapper = objectMapper;
+	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
 		final String[] tokens = msg.uri().split("/");
 		final String token = 2 < tokens.length && StringUtil.isNotEmpty(tokens[2]) ? tokens[2] : null;
 		final HttpMethod method = msg.method();
-		
+
 		final String tenantId = "1";
 		
 		if(GET.equals(method) && null == token) {
