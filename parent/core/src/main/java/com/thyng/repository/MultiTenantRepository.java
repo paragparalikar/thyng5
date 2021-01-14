@@ -3,7 +3,7 @@ package com.thyng.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.thyng.domain.intf.Callback;
+import com.thyng.Callback;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.TenantAwareModel;
 

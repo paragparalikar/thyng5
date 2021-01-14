@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.thyng.Callback;
 import com.thyng.Context;
-import com.thyng.domain.intf.Callback;
 import com.thyng.domain.model.Actuator;
 import com.thyng.domain.model.Sensor;
 import com.thyng.domain.model.Template;

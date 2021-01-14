@@ -12,7 +12,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.IAtomicLong;
 import com.hazelcast.cp.lock.FencedLock;
 import com.hazelcast.map.IMap;
-import com.thyng.domain.intf.Callback;
+import com.thyng.Callback;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Nameable;
@@ -75,7 +75,7 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 	
 	@Override
 	public void count(Callback<Long> callback) {
-		callback.after(new Long(cache.size()), null);
+		callback.call(new Long(cache.size()), null);
 	}
 	
 	@Override
@@ -92,12 +92,12 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 	
 	@Override
 	public void findAll(Callback<List<T>> callback) {
-		callback.after(new ArrayList<>(cache.values()), null);
+		callback.call(new ArrayList<>(cache.values()), null);
 	}
 	
 	@Override
 	public void findById(String id, Callback<Optional<T>> callback) {
-		callback.after(Optional.ofNullable(cache.get(id)), null);
+		callback.call(Optional.ofNullable(cache.get(id)), null);
 	}
 	
 	public void save(T entity, Callback<T> callback) {
@@ -121,7 +121,7 @@ public class HazelcastRepository<T extends Identifiable<String> & Nameable> impl
 			return !Objects.equals(id, entity.getId()) 
 					&& name.trim().equalsIgnoreCase(entity.getName().trim());
 		});
-		callback.after(result, null);
+		callback.call(result, null);
 	}
 
 }

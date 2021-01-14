@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.thyng.domain.intf.Callback;
+import com.thyng.Callback;
 import com.thyng.repository.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 		client.scanPaginator(request).subscribe(response -> {
 			counter.addAndGet(response.count());
 		}).whenCompleteAsync((none, throwable) -> {
-			callback.after(counter.get(), throwable);
+			callback.call(counter.get(), throwable);
 		});
 	}
 
@@ -54,7 +54,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 		client.scanPaginator(request).subscribe(response -> {
 			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			callback.after(null == throwable ? items : null, throwable);
+			callback.call(null == throwable ? items : null, throwable);
 		});
 	}
 
@@ -64,7 +64,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 				.tableName(tableName)
 				.item(map(entity))
 				.build()).whenCompleteAsync((response, throwable) -> {
-					callback.after(null == throwable ? entity : null, throwable);
+					callback.call(null == throwable ? entity : null, throwable);
 				});
 	}
 
@@ -77,7 +77,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 		client.getItem(request).whenCompleteAsync((response, throwable) -> {
 			final T item = null == response || null == response.item() ? null : map(response.item());
 			final Optional<T> optionalItem = null == throwable ? Optional.ofNullable(item) : null;
-			callback.after(optionalItem, throwable); 
+			callback.call(optionalItem, throwable); 
 		});
 	}
 
@@ -90,7 +90,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 		client.deleteItem(request).whenCompleteAsync((response, throwable) -> {
 			final T item = null == response || null == response.attributes() ? 
 					null : map(response.attributes()); 
-			callback.after(item, throwable); 
+			callback.call(item, throwable); 
 		});
 	}
 	
@@ -117,7 +117,7 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 				flag.set(Boolean.TRUE);
 			}
 		}).whenComplete((none, throwable) -> {
-			callback.after(flag.get(), throwable);
+			callback.call(flag.get(), throwable);
 		});
 	}
 	

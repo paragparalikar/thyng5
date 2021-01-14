@@ -19,6 +19,11 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.projectlombok:lombok</exclude>
+                </excludes>
+              </artifactSet>
               <transformers>
                 <transformer />
                 <transformer>

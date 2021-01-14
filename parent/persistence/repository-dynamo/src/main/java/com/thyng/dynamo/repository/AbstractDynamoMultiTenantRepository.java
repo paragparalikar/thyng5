@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.thyng.domain.intf.Callback;
+import com.thyng.Callback;
 import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.repository.MultiTenantRepository;
 
@@ -49,7 +49,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 		}).whenCompleteAsync((none, throwable) -> {
 			if(null != throwable) log.error("Failed to count {} for tenantId {} with exception {}", 
 					tableName, tenantId, throwable.getMessage());
-			callback.after(counter.get(), throwable);
+			callback.call(counter.get(), throwable);
 		});
 	}
 
@@ -63,7 +63,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 		client.scanPaginator(request).subscribe(response -> {
 			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			callback.after(null == throwable ? items : null, throwable);
+			callback.call(null == throwable ? items : null, throwable);
 		});
 	}
 	
@@ -79,7 +79,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 		client.queryPaginator(queryRequest).subscribe(response -> {
 			response.items().stream().map(this::map).forEach(items::add);
 		}).whenCompleteAsync((none, throwable) -> {
-			callback.after(null == throwable ? items : null, throwable);
+			callback.call(null == throwable ? items : null, throwable);
 		});
 	}
 
@@ -89,7 +89,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 			.tableName(tableName)
 			.item(map(entity))
 			.build()).whenCompleteAsync((response, throwable) -> {
-				callback.after(null == throwable ? entity : null, throwable);
+				callback.call(null == throwable ? entity : null, throwable);
 			});
 	}
 
@@ -102,7 +102,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 		client.getItem(request).whenCompleteAsync((response, throwable) -> {
 			final T item = null == response ? null : map(response.item());
 			final Optional<T> optionalItem = null == throwable ? Optional.ofNullable(item) : null;
-			callback.after(optionalItem, throwable); 
+			callback.call(optionalItem, throwable); 
 		});
 	}
 
@@ -114,7 +114,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 				.build();
 		client.deleteItem(request).whenCompleteAsync((response, throwable) -> {
 			final T item = null == response ? null : map(response.attributes());
-			callback.after(item, throwable);  
+			callback.call(item, throwable);  
 			log.info("Deleted {} with success {} and failure {}", tableName, item, throwable);
 		});
 	}
@@ -145,7 +145,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 				flag.set(Boolean.TRUE);
 			}
 		}).whenComplete((none, throwable) -> {
-			callback.after(flag.get(), throwable);
+			callback.call(flag.get(), throwable);
 		});
 	}
 

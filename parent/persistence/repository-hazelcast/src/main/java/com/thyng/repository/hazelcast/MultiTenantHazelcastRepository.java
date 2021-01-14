@@ -14,8 +14,8 @@ import com.hazelcast.cp.lock.FencedLock;
 import com.hazelcast.internal.util.StringUtil;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.Predicate;
+import com.thyng.Callback;
 import com.thyng.domain.exception.UnauthorizedActionException;
-import com.thyng.domain.intf.Callback;
 import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.repository.MultiTenantRepository;
 
@@ -91,13 +91,13 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 	
 	@Override
 	public void count(String tenantId, Callback<Long> callback) {
-		callback.after(cache.aggregate(Aggregators.count(), tenantPredicate(tenantId)), null);		
+		callback.call(cache.aggregate(Aggregators.count(), tenantPredicate(tenantId)), null);		
 	}
 	
 	@Override
 	public void findById(String tenantId, String id, Callback<Optional<T>> callback) {
 		final T item = verifyTenant(tenantId, cache.get(id));
-		callback.after(Optional.ofNullable(item), null);
+		callback.call(Optional.ofNullable(item), null);
 	}
 	
 	@Override
@@ -135,14 +135,14 @@ public class MultiTenantHazelcastRepository<T extends TenantAwareModel> implemen
 	
 	@Override
 	public void findAll(String tenantId, Callback<List<T>> callback) {
-		callback.after(new ArrayList<>(cache.values(tenantPredicate(tenantId))), null);
+		callback.call(new ArrayList<>(cache.values(tenantPredicate(tenantId))), null);
 	}
 
 	@Override
 	public void existsByName(String tenantId, String id, String name, Callback<Boolean> callback) {
 		final T entity = cache.get(id);
 		final boolean result = 0 < cache.aggregate(Aggregators.count(), entry -> existsByName(entity, entry.getValue()));
-		callback.after(result, null);
+		callback.call(result, null);
 	}
 	
 	protected boolean existsByName(T entity, T other) {
