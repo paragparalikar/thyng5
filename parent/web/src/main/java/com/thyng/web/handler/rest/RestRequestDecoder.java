@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.thyng.util.Strings;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.FullHttpRequest;
 
+@Sharable
 public class RestRequestDecoder extends MessageToMessageDecoder<FullHttpRequest> {
 	
 	protected void resolvePathParameters(URI uri, RestRequest restRequest) {

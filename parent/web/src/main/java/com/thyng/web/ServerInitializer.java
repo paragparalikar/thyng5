@@ -22,6 +22,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 	private final Context context = new Context();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final List<Module> modules = new LinkedList<>();
+	private final RestRequestDecoder restRequestDecoder = new RestRequestDecoder();
 	private final RequestRouterHandler requestRouterHandler = new RequestRouterHandler(context, objectMapper);
 
 	public ServerInitializer() {
@@ -42,11 +43,11 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 	
 	@Override
 	public void stop() throws Exception {
-		context.stop();
 		modules.sort(Comparator.reverseOrder());
 		for(Module module : modules) {
 			module.stop();
 		}
+		context.stop();
 	}
 	
 	@Override
@@ -54,7 +55,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 		channel.pipeline()
 			.addLast(new HttpServerCodec())
 			.addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
-			.addLast(new RestRequestDecoder())
+			.addLast(restRequestDecoder)
 			.addLast(requestRouterHandler);
 	}
 

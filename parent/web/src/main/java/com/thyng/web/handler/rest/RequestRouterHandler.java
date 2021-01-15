@@ -3,7 +3,6 @@ package com.thyng.web.handler.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
@@ -15,7 +14,6 @@ import com.thyng.web.handler.rest.crud.MultiTenantRestCrudHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.RequiredArgsConstructor;
 
@@ -46,18 +44,9 @@ public class RequestRouterHandler extends MessageToMessageDecoder<RestRequest> i
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, RestRequest request, List<Object> out) throws Exception {
-		clean(ctx.pipeline());
 		final String entityName = request.getPathParameters().getOrDefault(0, CONTEXT_PATH);
 		ctx.pipeline().addLast(HANDLER, handlers.getOrDefault(entityName, notFoundHandler));
 		out.add(request.retain());
-	}
-	
-	private void clean(ChannelPipeline pipeline) {
-		try {
-			pipeline.remove(HANDLER);
-		} catch (NoSuchElementException ignored) {
-			
-		}
 	}
 
 }

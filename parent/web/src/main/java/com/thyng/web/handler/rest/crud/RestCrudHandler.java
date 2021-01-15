@@ -71,6 +71,7 @@ public abstract class RestCrudHandler<T> extends SimpleChannelInboundHandler<Res
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		ctx.flush();
+		ctx.pipeline().remove(this);
 	}
 	
 	@Override
