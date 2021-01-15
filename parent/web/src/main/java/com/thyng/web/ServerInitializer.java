@@ -16,12 +16,16 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.cors.CorsConfig;
+import io.netty.handler.codec.http.cors.CorsConfigBuilder;
+import io.netty.handler.codec.http.cors.CorsHandler;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> implements Lifecycle {
 	
 	private final Context context = new Context();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final List<Module> modules = new LinkedList<>();
+	private final CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().build();
 	private final RestRequestDecoder restRequestDecoder = new RestRequestDecoder();
 	private final RequestRouterHandler requestRouterHandler = new RequestRouterHandler(context, objectMapper);
 
@@ -55,6 +59,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> impleme
 		channel.pipeline()
 			.addLast(new HttpServerCodec())
 			.addLast(new HttpObjectAggregator(Integer.MAX_VALUE))
+			.addLast(new CorsHandler(corsConfig))
 			.addLast(restRequestDecoder)
 			.addLast(requestRouterHandler);
 	}
