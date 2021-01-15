@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.thyng.domain.model.Actuator;
+import com.thyng.repository.CounterRepository;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class ActuatorDynamoRepository extends AbstractDynamoMultiTenantRepository<Actuator> {
 
-	public ActuatorDynamoRepository(DynamoDbAsyncClient client) {
-		super(Actuator.CACHE_NAME, client);
+	public ActuatorDynamoRepository(DynamoDbAsyncClient client, CounterRepository counterRepository) {
+		super(Actuator.CACHE_NAME, client, counterRepository);
 	}
 
 	@Override

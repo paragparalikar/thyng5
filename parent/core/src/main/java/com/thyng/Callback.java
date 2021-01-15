@@ -2,6 +2,7 @@ package com.thyng;
 
 import java.util.function.Consumer;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 @SuperBuilder
 public class Callback<T> {
 
-	private final Consumer<T> success;
-	private final Consumer<Throwable> failure;
 	private final Runnable after;
+	private final Consumer<T> success;
+	@Builder.Default
+	private final Consumer<Throwable> failure = throwable -> log.error("", throwable);
+	
 
 	public void call(T item, Throwable throwable) {
 		success(item, throwable);

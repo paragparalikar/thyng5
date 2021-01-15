@@ -67,9 +67,8 @@ public class CreateTableCommand {
 	
 	public void execute(DynamoDbAsyncClient client, BiConsumer<CreateTableResponse, Throwable> callback) {
 		log.info("Creting table {}", tableName);
-		client.createTable(createTableRequest()).handleAsync((response, exception) -> {
+		client.createTable(createTableRequest()).whenComplete((response, exception) -> {
 			callback.accept(response, exception);
-			return null;
 		});
 	}
 	

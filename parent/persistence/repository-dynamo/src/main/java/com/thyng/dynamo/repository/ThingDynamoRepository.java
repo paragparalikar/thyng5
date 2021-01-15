@@ -6,14 +6,15 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.thyng.domain.model.Thing;
+import com.thyng.repository.CounterRepository;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class ThingDynamoRepository extends AbstractDynamoMultiTenantRepository<Thing> {
 
-	public ThingDynamoRepository(DynamoDbAsyncClient client) {
-		super(Thing.CACHE_NAME, client);
+	public ThingDynamoRepository(DynamoDbAsyncClient client, CounterRepository counterRepository) {
+		super(Thing.CACHE_NAME, client, counterRepository);
 	}
 
 	@Override

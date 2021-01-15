@@ -14,12 +14,14 @@ import com.thyng.domain.model.Trigger;
 import com.thyng.dynamo.command.CreateTableCommand;
 import com.thyng.dynamo.command.CreateTenantAwareTableCommand;
 import com.thyng.dynamo.repository.ActuatorDynamoRepository;
+import com.thyng.dynamo.repository.CounterDynamoRepository;
 import com.thyng.dynamo.repository.GatewayDynamoRepository;
 import com.thyng.dynamo.repository.SensorDynamoRepository;
 import com.thyng.dynamo.repository.TemplateDynamoRepository;
 import com.thyng.dynamo.repository.TenantDynamoRepository;
 import com.thyng.dynamo.repository.ThingDynamoRepository;
 import com.thyng.dynamo.repository.TriggerDynamoRepository;
+import com.thyng.repository.CounterRepository;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,7 @@ public class DynamoRepositoryModule implements Module {
 	
 	private void createTablesIfNotExist() {
 		final List<String> tables = syncClient.listTables().tableNames();
+		if(!tables.contains(CounterRepository.CACHE_NAME)) new CreateTableCommand(CounterRepository.CACHE_NAME).execute(syncClient);
 		if(!tables.contains(Tenant.CACHE_NAME)) new CreateTableCommand(Tenant.CACHE_NAME).execute(syncClient);
 		if(!tables.contains(Actuator.CACHE_NAME)) new CreateTenantAwareTableCommand(Actuator.CACHE_NAME).execute(syncClient);
 		if(!tables.contains(Gateway.CACHE_NAME)) new CreateTenantAwareTableCommand(Gateway.CACHE_NAME).execute(syncClient);
@@ -60,13 +63,15 @@ public class DynamoRepositoryModule implements Module {
 	}
 	
 	private void createRepositories() {
-		context.setActuatorRepository(new ActuatorDynamoRepository(asyncClient));
-		context.setGatewayRepository(new GatewayDynamoRepository(asyncClient));
-		context.setSensorRepository(new SensorDynamoRepository(asyncClient));
-		context.setTemplateRepository(new TemplateDynamoRepository(asyncClient));
-		context.setTenantRepository(new TenantDynamoRepository(asyncClient));
-		context.setThingRepository(new ThingDynamoRepository(asyncClient));
-		context.setTriggerRepository(new TriggerDynamoRepository(asyncClient));
+		final CounterRepository counterRepository = new CounterDynamoRepository(asyncClient); 
+		context.setCounterRepository(counterRepository);
+		context.setActuatorRepository(new ActuatorDynamoRepository(asyncClient, counterRepository));
+		context.setGatewayRepository(new GatewayDynamoRepository(asyncClient, counterRepository));
+		context.setSensorRepository(new SensorDynamoRepository(asyncClient, counterRepository));
+		context.setTemplateRepository(new TemplateDynamoRepository(asyncClient, counterRepository));
+		context.setTenantRepository(new TenantDynamoRepository(asyncClient, counterRepository));
+		context.setThingRepository(new ThingDynamoRepository(asyncClient, counterRepository));
+		context.setTriggerRepository(new TriggerDynamoRepository(asyncClient, counterRepository));
 	}
 	
 	private DynamoDbAsyncClient asyncClient() {

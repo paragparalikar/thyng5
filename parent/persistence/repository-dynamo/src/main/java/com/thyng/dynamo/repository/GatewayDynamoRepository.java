@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.thyng.domain.model.Gateway;
+import com.thyng.repository.CounterRepository;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class GatewayDynamoRepository extends AbstractDynamoMultiTenantRepository<Gateway> {
 
-	public GatewayDynamoRepository(DynamoDbAsyncClient client) {
-		super(Gateway.CACHE_NAME, client);
+	public GatewayDynamoRepository(DynamoDbAsyncClient client, CounterRepository counterRepository) {
+		super(Gateway.CACHE_NAME, client, counterRepository);
 	}
 
 	@Override

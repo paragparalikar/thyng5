@@ -9,7 +9,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.thyng.Callback;
+import com.thyng.domain.intf.Identifiable;
+import com.thyng.repository.CounterRepository;
 import com.thyng.repository.Repository;
+import com.thyng.util.Strings;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -21,10 +24,11 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.Select;
 
 @RequiredArgsConstructor
-public abstract class AbstractDynamoRepository<T> implements Repository<T, String> {
+public abstract class AbstractDynamoRepository<T extends Identifiable<String>> implements Repository<T, String> {
 
 	private final String tableName;
 	private final DynamoDbAsyncClient client;
+	private final CounterRepository counterRepository;
 
 	protected abstract Map<String, AttributeValue> map(T item);
 	
@@ -57,9 +61,24 @@ public abstract class AbstractDynamoRepository<T> implements Repository<T, Strin
 			callback.call(null == throwable ? items : null, throwable);
 		});
 	}
-
+	
 	@Override
 	public void save(T entity, Callback<T> callback) {
+		if(Strings.isBlank(entity.getId())) {
+			counterRepository.addAndGet(tableName, 1L, Callback.<Long>builder()
+					.failure(callback.getFailure())
+					.after(callback.getAfter())
+					.success(id -> {
+						entity.setId(Long.toString(id, Character.MAX_RADIX));
+						save_(entity, callback);
+					})
+					.build());
+		} else {
+			save_(entity, callback);
+		}
+	}
+	
+	private void save_(T entity, Callback<T> callback) {
 		client.putItem(PutItemRequest.builder()
 				.tableName(tableName)
 				.item(map(entity))

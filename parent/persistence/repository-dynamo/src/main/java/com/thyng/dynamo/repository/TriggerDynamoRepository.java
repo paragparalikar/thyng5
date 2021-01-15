@@ -9,14 +9,15 @@ import com.thyng.domain.enumeration.WindowBase;
 import com.thyng.domain.enumeration.WindowType;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.Window;
+import com.thyng.repository.CounterRepository;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class TriggerDynamoRepository extends AbstractDynamoMultiTenantRepository<Trigger> {
 
-	public TriggerDynamoRepository(DynamoDbAsyncClient client) {
-		super(Trigger.CACHE_NAME, client);
+	public TriggerDynamoRepository(DynamoDbAsyncClient client, CounterRepository counterRepository) {
+		super(Trigger.CACHE_NAME, client, counterRepository);
 	}
 
 	@Override

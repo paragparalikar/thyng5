@@ -15,7 +15,7 @@
 			<artifactId>repository-dynamo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>hazelcast-member</artifactId>
 			<version>${project.version}</version>
@@ -24,7 +24,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>repository-hazelcast</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-codec-http</artifactId>

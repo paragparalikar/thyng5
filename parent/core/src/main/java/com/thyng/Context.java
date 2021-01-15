@@ -13,6 +13,7 @@ import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.Trigger;
+import com.thyng.repository.CounterRepository;
 import com.thyng.repository.MultiTenantRepository;
 import com.thyng.repository.Repository;
 
@@ -23,6 +24,7 @@ public class Context implements Lifecycle {
 
 	private JetInstance jetInstnace;
 	private HazelcastInstance hazelcastInstance;
+	private CounterRepository counterRepository;
 	private Repository<Tenant, String> tenantRepository;
 	private MultiTenantRepository<Gateway> gatewayRepository;
 	private MultiTenantRepository<Template> templateRepository;
@@ -36,6 +38,7 @@ public class Context implements Lifecycle {
 	
 	@Override
 	public void start() throws Exception {
+		counterRepository.start();
 		tenantRepository.start();
 		gatewayRepository.start();
 		templateRepository.start();
@@ -47,13 +50,14 @@ public class Context implements Lifecycle {
 	
 	@Override
 	public void stop() throws Exception {
-		tenantRepository.stop();
-		gatewayRepository.stop();
-		templateRepository.stop();
+		triggerRepository.stop();
+		thingRepository.stop();
 		sensorRepository.stop();
 		actuatorRepository.stop();
-		thingRepository.stop();
-		triggerRepository.stop();
+		templateRepository.stop();
+		gatewayRepository.stop();
+		tenantRepository.stop();
+		counterRepository.stop();
 	}
 
 }

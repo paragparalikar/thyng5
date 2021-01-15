@@ -11,7 +11,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.thyng.Callback;
 import com.thyng.domain.intf.TenantAwareModel;
+import com.thyng.repository.CounterRepository;
 import com.thyng.repository.MultiTenantRepository;
+import com.thyng.util.Strings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 
 	private final String tableName;
 	private final DynamoDbAsyncClient client;
+	private final CounterRepository counterRepository;
 
 	protected abstract Map<String, AttributeValue> map(T item);
 	
@@ -85,13 +88,28 @@ public abstract class AbstractDynamoMultiTenantRepository<T extends TenantAwareM
 
 	@Override
 	public void save(T entity, Callback<T> callback) {
-		client.putItem(PutItemRequest.builder()
-			.tableName(tableName)
-			.item(map(entity))
-			.build()).whenCompleteAsync((response, throwable) -> {
-				callback.call(null == throwable ? entity : null, throwable);
-			});
+		if(Strings.isBlank(entity.getId())) {
+			counterRepository.addAndGet(tableName, 1L, Callback.<Long>builder()
+					.failure(callback.getFailure())
+					.after(callback.getAfter())
+					.success(id -> {
+						entity.setId(Long.toString(id, Character.MAX_RADIX));
+						save_(entity, callback);
+					})
+					.build());
+		} else {
+			save_(entity, callback);
+		}
 	}
+	
+	private void save_(T entity, Callback<T> callback) {
+		client.putItem(PutItemRequest.builder()
+				.tableName(tableName)
+				.item(map(entity))
+				.build()).whenCompleteAsync((response, throwable) -> {
+					callback.call(null == throwable ? entity : null, throwable);
+				});
+		}
 
 	@Override
 	public void findById(String tenantId, String id, Callback<Optional<T>> callback) {
