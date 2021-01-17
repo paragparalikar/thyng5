@@ -19,6 +19,7 @@ import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.Trigger;
 import com.thyng.util.Names;
 
+import spark.Filter;
 import spark.Spark;
 
 public class ThyngWebApplication {
@@ -65,6 +66,10 @@ public class ThyngWebApplication {
 		stopOnShutdown(context, modules);
 
 		Spark.defaultResponseTransformer(objectMapper::writeValueAsString);
+		Spark.after((Filter) (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "*");
+        });
 		final List<Lifecycle> controllers = Arrays.asList(
 				new Controller<Tenant>("/" + Names.TENANT, objectMapper, context.getTenantRepository()),
 				new TenantAwareController<Gateway>("/" + Names.GATEWAY, objectMapper, context.getGatewayRepository()),
