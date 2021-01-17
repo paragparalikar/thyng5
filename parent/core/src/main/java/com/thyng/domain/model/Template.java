@@ -16,7 +16,7 @@ public class Template implements TenantAwareModel {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
-	@NotBlank @Size(min = 3, max = 255) private String name;
+	@NotBlank @Size(max = 255) private String name;
 	@NotBlank private String tenantId;
 	@NotNull @Min(60) private Integer inactivityPeriod = 60;
 	private Map<@NotBlank String,@NotBlank String> attributes;

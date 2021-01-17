@@ -12,8 +12,8 @@ public class Sensor implements TemplateAwareModel {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
-	@NotBlank @Size(min = 3, max = 255) private String name;
-	@NotBlank @Size(min = 1, max = 255) private String unit;
+	@NotBlank @Size(max = 255) private String name;
+	@NotBlank @Size(max = 255) private String unit;
 	@NotBlank private String tenantId;
 	@NotBlank private String templateId;
 

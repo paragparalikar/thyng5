@@ -17,6 +17,6 @@ public class Action implements TenantAwareModel {
 	@NotBlank private String tenantId;
 	@NotNull private Boolean enabled;
 	@NotNull private ActionType actionType;
-	@NotBlank @Size(min = 3, max = 255) private String name;
+	@NotBlank @Size(max = 255) private String name;
 
 }

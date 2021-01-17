@@ -16,7 +16,7 @@ public class Thing implements TemplateAwareModel {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
-	@NotBlank @Size(min = 3, max = 255) private String name;
+	@NotBlank @Size(max = 255) private String name;
 	@NotBlank private String tenantId;
 	@NotBlank private String templateId;
 	@NotNull @Min(60) private Integer inactivityPeriod = 60;

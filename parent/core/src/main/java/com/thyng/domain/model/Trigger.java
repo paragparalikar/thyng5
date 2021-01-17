@@ -23,6 +23,6 @@ public class Trigger implements TenantAwareModel {
 	@NotNull private EventType eventType;
 	@NotBlank private String thingSelectionScript;
 	@NotBlank private String evaluationScript;
-	@NotBlank @Size(min = 3, max = 255) private String name;
+	@NotBlank @Size(max = 255) private String name;
 
 }

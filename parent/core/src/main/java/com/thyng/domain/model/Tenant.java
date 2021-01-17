@@ -15,7 +15,7 @@ public class Tenant implements Identifiable<String>, Nameable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	@NotBlank @Size(min = 3, max = 255) private String name;
+	@NotBlank @Size(max = 255) private String name;
 	@NotBlank private Boolean enabled = Boolean.TRUE;
 
 }
