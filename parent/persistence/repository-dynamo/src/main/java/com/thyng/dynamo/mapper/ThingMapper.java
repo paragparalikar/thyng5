@@ -20,6 +20,7 @@ public class ThingMapper implements Mapper<Thing> {
 		map.put("id", AttributeValue.builder().s(item.getId()).build());
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
+		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
 		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
 		map.put("attributes", AttributeValue.builder().m(attributesMapper.unmap(item.getAttributes())).build());
 		return map;
@@ -32,6 +33,7 @@ public class ThingMapper implements Mapper<Thing> {
 		thing.setId(attributes.get("id").s());
 		thing.setName(attributes.get("name").s());
 		thing.setTenantId(attributes.get("tenantId").s());
+		thing.setTemplateId(attributes.get("templateId").s());
 		thing.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
 		thing.setAttributes(attributesMapper.map(attributes.get("attributes").m()));
 		return thing;

@@ -15,6 +15,7 @@ public class ActuatorMapper implements Mapper<Actuator> {
 		map.put("id", AttributeValue.builder().s(item.getId()).build());
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
+		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
 		return map;
 	}
 
@@ -25,6 +26,7 @@ public class ActuatorMapper implements Mapper<Actuator> {
 		item.setId(attributes.get("id").s());
 		item.setName(attributes.get("name").s());
 		item.setTenantId(attributes.get("tenantId").s());
+		item.setTemplateId(attributes.get("templateId").s());
 		return item;
 	}
 }

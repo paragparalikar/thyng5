@@ -16,6 +16,7 @@ public class SensorMapper implements Mapper<Sensor> {
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("unit", AttributeValue.builder().s(item.getUnit()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
+		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
 		return map;
 	}
 
@@ -27,6 +28,7 @@ public class SensorMapper implements Mapper<Sensor> {
 		item.setName(attributes.get("name").s());
 		item.setUnit(attributes.get("unit").s());
 		item.setTenantId(attributes.get("tenantId").s());
+		item.setTemplateId(attributes.get("templateId").s());
 		return item;
 	}
 
