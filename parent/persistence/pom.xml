@@ -9,6 +9,5 @@
   <packaging>pom</packaging>
   <modules>
   	<module>repository-dynamo</module>
-  	<module>repository-hazelcast</module>
   </modules>
 </project>

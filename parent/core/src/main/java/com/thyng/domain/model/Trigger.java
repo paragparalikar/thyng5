@@ -14,7 +14,6 @@ import lombok.Data;
 @Data
 public class Trigger implements TenantAwareModel {
 	private static final long serialVersionUID = 1L;
-	public static final String CACHE_NAME = "trigger";
 
 	private String id;
 	@Valid private Window window;

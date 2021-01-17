@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class Gateway implements TenantAwareModel {
 	private static final long serialVersionUID = 1L;
-	public static final String CACHE_NAME = "gateway";
 	
 	private String id;
 	@NotBlank @Size(min = 3, max = 255) private String name;

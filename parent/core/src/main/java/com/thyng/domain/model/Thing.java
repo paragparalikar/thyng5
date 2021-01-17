@@ -7,14 +7,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.thyng.domain.intf.TenantAwareModel;
+import com.thyng.domain.intf.TemplateAwareModel;
 
 import lombok.Data;
 
 @Data
-public class Thing implements TenantAwareModel {
+public class Thing implements TemplateAwareModel {
 	private static final long serialVersionUID = 1L;
-	public static final String CACHE_NAME = "thing";
 	
 	private String id;
 	@NotBlank @Size(min = 3, max = 255) private String name;

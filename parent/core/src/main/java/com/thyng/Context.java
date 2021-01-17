@@ -1,7 +1,5 @@
 package com.thyng;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.jet.JetInstance;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.model.Action;
 import com.thyng.domain.model.Actuator;
@@ -14,27 +12,26 @@ import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.Trigger;
 import com.thyng.repository.CounterRepository;
-import com.thyng.repository.MultiTenantRepository;
 import com.thyng.repository.Repository;
+import com.thyng.repository.TemplateAwareRepository;
+import com.thyng.repository.TenantAwareRepository;
 
 import lombok.Data;
 
 @Data
 public class Context implements Lifecycle {
 
-	private JetInstance jetInstnace;
-	private HazelcastInstance hazelcastInstance;
 	private CounterRepository counterRepository;
 	private Repository<Tenant, String> tenantRepository;
-	private MultiTenantRepository<Gateway> gatewayRepository;
-	private MultiTenantRepository<Template> templateRepository;
-	private MultiTenantRepository<Sensor> sensorRepository;
-	private MultiTenantRepository<Actuator> actuatorRepository;
-	private MultiTenantRepository<Thing> thingRepository;
-	private MultiTenantRepository<Trigger> triggerRepository;
-	private MultiTenantRepository<Action> actionRepository;
-	private MultiTenantRepository<AlertAction> alertActionRepository;
-	private MultiTenantRepository<MailAlertAction> mailAlertActionRepository;
+	private TenantAwareRepository<Gateway> gatewayRepository;
+	private TenantAwareRepository<Template> templateRepository;
+	private TemplateAwareRepository<Sensor> sensorRepository;
+	private TemplateAwareRepository<Actuator> actuatorRepository;
+	private TemplateAwareRepository<Thing> thingRepository;
+	private TenantAwareRepository<Trigger> triggerRepository;
+	private TenantAwareRepository<Action> actionRepository;
+	private TenantAwareRepository<AlertAction> alertActionRepository;
+	private TenantAwareRepository<MailAlertAction> mailAlertActionRepository;
 	
 	@Override
 	public void start() throws Exception {
@@ -59,5 +56,6 @@ public class Context implements Lifecycle {
 		tenantRepository.stop();
 		counterRepository.stop();
 	}
+
 
 }
