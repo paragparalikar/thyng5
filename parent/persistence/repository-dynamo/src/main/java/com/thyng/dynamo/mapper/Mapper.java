@@ -15,7 +15,8 @@ public interface Mapper<T, V> {
 	V unmap(T entity);
 
 	default Set<V> unmap(Collection<T> entities) {
-		return entities.stream().map(this::unmap).collect(Collectors.toSet());
+		final Set<V> values = entities.stream().map(this::unmap).collect(Collectors.toSet());
+		return values.isEmpty() ? null : values;
 	}
 
 }

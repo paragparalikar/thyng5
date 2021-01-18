@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.thyng.domain.model.Template;
+import com.thyng.util.Collectionz;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,9 @@ public class TemplateMapper implements Mapper<Template, Map<String, AttributeVal
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
 		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		map.put("sensors", AttributeValue.builder().ss(sensorMapper.unmap(item.getSensors())).build());
-		map.put("actuators", AttributeValue.builder().ss(actuatorMapper.unmap(item.getActuators())).build());
-		map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
+		if(Collectionz.isNotNullOrEmpty(item.getSensors())) map.put("sensors", AttributeValue.builder().ss(sensorMapper.unmap(item.getSensors())).build());
+		if(Collectionz.isNotNullOrEmpty(item.getActuators())) map.put("actuators", AttributeValue.builder().ss(actuatorMapper.unmap(item.getActuators())).build());
+		if(Collectionz.isNotNullOrEmpty(item.getAttributes())) map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
 		return map;
 	}
 

@@ -3,7 +3,6 @@ package com.thyng.web;
 import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Lifecycle;
@@ -20,6 +19,7 @@ import spark.Spark;
 public class Controller<T extends Identifiable<String> & Nameable> implements Lifecycle {
 
 	@NonNull private final String path;
+	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
 	@NonNull private final Repository<T, String> repository;
 
@@ -39,7 +39,7 @@ public class Controller<T extends Identifiable<String> & Nameable> implements Li
 	
 	private T transform(Request request) {
 		try {
-			return objectMapper.readValue(request.body(), new TypeReference<T>() {});
+			return objectMapper.readValue(request.body(), type);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			Spark.halt(HttpStatus.BAD_REQUEST_400, Throwables.stackTrace(e));

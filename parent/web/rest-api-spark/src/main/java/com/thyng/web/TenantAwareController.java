@@ -19,6 +19,7 @@ import spark.Spark;
 public class TenantAwareController<T extends TenantAwareModel> implements Lifecycle {
 
 	@NonNull private final String path;
+	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
 	@NonNull private final TenantAwareRepository<T> repository;
 
@@ -42,7 +43,9 @@ public class TenantAwareController<T extends TenantAwareModel> implements Lifecy
 	
 	private T transform(Request request) {
 		try {
-			return objectMapper.readValue(request.body(), new TypeReference<T>() {});
+			final T entity = objectMapper.readValue(request.body(), type);
+			entity.setTenantId(tenantId(request));
+			return entity;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			Spark.halt(HttpStatus.BAD_REQUEST_400, Throwables.stackTrace(e));

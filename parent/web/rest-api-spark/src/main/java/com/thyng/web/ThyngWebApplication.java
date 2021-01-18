@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
@@ -56,6 +55,22 @@ public class ThyngWebApplication {
 			}
 		});
 	}
+	
+	private static void cors() {
+		Spark.options("/*",
+		        (request, response) -> {
+		            final String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+		            if (accessControlRequestHeaders != null) response.header("Access-Control-Allow-Headers",accessControlRequestHeaders);
+
+		            final String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+		            if (accessControlRequestMethod != null) response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+		            return "OK";
+		        });
+		Spark.after((Filter) (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "*");
+        });
+	}
 
 	public static void main(String[] args) throws Exception {
 		final Context context = new Context();
@@ -66,17 +81,14 @@ public class ThyngWebApplication {
 		start(context, modules);
 		stopOnShutdown(context, modules);
 
+		cors();
 		Spark.defaultResponseTransformer(objectMapper::writeValueAsString);
-		Spark.after((Filter) (request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "*");
-        });
 		final List<Lifecycle> controllers = Arrays.asList(
-				new Controller<Tenant>("/" + Names.TENANT, objectMapper, context.getTenantRepository()),
-				new TenantAwareController<Gateway>("/" + Names.GATEWAY, objectMapper, context.getGatewayRepository()),
-				new TenantAwareController<Template>("/" + Names.TEMPALTE, objectMapper, context.getTemplateRepository()),
-				new TenantAwareController<Thing>("/" + Names.THING, objectMapper, context.getThingRepository()),
-				new TenantAwareController<Trigger>("/" + Names.TRIGGER, objectMapper, context.getTriggerRepository()));
+				new Controller<Tenant>("/" + Names.TENANT, Tenant.class, objectMapper, context.getTenantRepository()),
+				new TenantAwareController<Gateway>("/" + Names.GATEWAY, Gateway.class, objectMapper, context.getGatewayRepository()),
+				new TenantAwareController<Template>("/" + Names.TEMPALTE, Template.class, objectMapper, context.getTemplateRepository()),
+				new TenantAwareController<Thing>("/" + Names.THING, Thing.class, objectMapper, context.getThingRepository()),
+				new TenantAwareController<Trigger>("/" + Names.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()));
 		
 		for(Lifecycle controller : controllers) controller.start();
 	}
