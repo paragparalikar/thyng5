@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
 import com.thyng.domain.intf.Lifecycle;
@@ -59,6 +61,7 @@ public class ThyngWebApplication {
 		final Context context = new Context();
 		final List<Module> modules = modules();
 		final ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setSerializationInclusion(Include.NON_EMPTY);
 		 
 		start(context, modules);
 		stopOnShutdown(context, modules);

@@ -20,7 +20,7 @@ public class Template implements TenantAwareModel {
 	private String id;
 	@NotBlank private String tenantId;
 	@NotBlank @Size(max = 255) private String name;
-	@NotNull @Min(60) private Integer inactivityPeriod = 60;
+	@NotNull @Min(60) private Integer inactivityPeriod;
 	
 	private Set<@Valid Sensor> sensors = new HashSet<>();
 	private Set<@Valid Actuator> actuators = new HashSet<>();

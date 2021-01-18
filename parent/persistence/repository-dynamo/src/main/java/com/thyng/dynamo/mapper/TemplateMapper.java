@@ -35,11 +35,11 @@ public class TemplateMapper implements Mapper<Template, Map<String, AttributeVal
 		final Template template = new Template();
 		template.setId(attributes.get("id").s());
 		template.setName(attributes.get("name").s());
-		template.setTenantId(attributes.get("tenantId").s());
-		template.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		template.setSensors(sensorMapper.map(attributes.get("sensors").ss()));
-		template.setActuators(actuatorMapper.map(attributes.get("actuators").ss()));
-		template.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
+		if(attributes.containsKey("tenantId")) template.setTenantId(attributes.get("tenantId").s());
+		if(attributes.containsKey("inactivityPeriod")) template.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
+		if(attributes.containsKey("sensors")) template.setSensors(sensorMapper.map(attributes.get("sensors").ss()));
+		if(attributes.containsKey("actuators")) template.setActuators(actuatorMapper.map(attributes.get("actuators").ss()));
+		if(attributes.containsKey("attributes")) template.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
 		return template;
 	}
 }

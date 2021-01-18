@@ -26,9 +26,9 @@ public class GatewayMapper implements Mapper<Gateway, Map<String, AttributeValue
 		final Gateway item = new Gateway();
 		item.setId(attributes.get("id").s());
 		item.setName(attributes.get("name").s());
-		item.setTenantId(attributes.get("tenantId").s());
-		item.setPublicKey(attributes.get("publicKey").s());
-		item.setPrivateKey(attributes.get("privateKey").s());
+		if(attributes.containsKey("tenantId")) item.setTenantId(attributes.get("tenantId").s());
+		if(attributes.containsKey("publicKey")) item.setPublicKey(attributes.get("publicKey").s());
+		if(attributes.containsKey("privateKey")) item.setPrivateKey(attributes.get("privateKey").s());
 		return item;
 	}
 

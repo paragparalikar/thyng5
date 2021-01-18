@@ -22,13 +22,13 @@ public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue
 		final Trigger item = new Trigger();
 		item.setId(attributes.get("id").s());
 		item.setName(attributes.get("name").s());
-		item.setTenantId(attributes.get("tenantId").s());
-		item.setEnabled(attributes.get("enabled").bool());
-		item.setWindow(windowMapper.map(attributes.get("window").m()));
-		item.setLanguage(Language.valueOf(attributes.get("language").s()));
-		item.setEventType(EventType.valueOf(attributes.get("eventType").s()));
-		item.setThingSelectionScript(attributes.get("thingSelectionScript").s());
-		item.setEvaluationScript(attributes.get("evaluationScript").s());
+		if(attributes.containsKey("tenantId")) item.setTenantId(attributes.get("tenantId").s());
+		if(attributes.containsKey("enabled")) item.setEnabled(attributes.get("enabled").bool());
+		if(attributes.containsKey("window")) item.setWindow(windowMapper.map(attributes.get("window").m()));
+		if(attributes.containsKey("language")) item.setLanguage(Language.valueOf(attributes.get("language").s()));
+		if(attributes.containsKey("eventType")) item.setEventType(EventType.valueOf(attributes.get("eventType").s()));
+		if(attributes.containsKey("thingSelectionScript")) item.setThingSelectionScript(attributes.get("thingSelectionScript").s());
+		if(attributes.containsKey("evaluationScript")) item.setEvaluationScript(attributes.get("evaluationScript").s());
 		return item;
 	}
 	

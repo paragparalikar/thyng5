@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.dynamo.mapper.Mapper;
-import com.thyng.dynamo.mapper.Mappers;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.TenantAwareRepository;
 import com.thyng.util.Strings;
@@ -43,25 +42,15 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				.map(mapper::map)
 				.collect(Collectors.toList());
 	}
-	
-	@Override
-	public Map<String, String> findAllNames(String tenantId) {
-		return Mappers.mapNames(client.query(QueryRequest.builder()
-				.tableName(tableName)
-				.select(Select.SPECIFIC_ATTRIBUTES)
-				.keyConditionExpression("tenantId = :tenantId")
-				.projectionExpression("id,#n")
-				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
-				.expressionAttributeValues(Collections.singletonMap(":tenantId", AttributeValue.builder().s(tenantId).build()))
-				.build()).items());
-	}
 
 	@Override
 	public List<T> findAll(String tenantId) {
 		return client.query(QueryRequest.builder()
 				.tableName(tableName)
-				.select(Select.ALL_ATTRIBUTES)
+				.select(Select.SPECIFIC_ATTRIBUTES)
 				.keyConditionExpression("tenantId = :tenantId")
+				.projectionExpression("id,#n")
+				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
 				.expressionAttributeValues(Collections.singletonMap(":tenantId", AttributeValue.builder().s(tenantId).build()))
 				.build()).items().stream()
 				.map(mapper::map)

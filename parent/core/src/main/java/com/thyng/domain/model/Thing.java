@@ -20,7 +20,7 @@ public class Thing implements TenantAwareModel {
 	@NotBlank @Size(max = 255) private String name;
 	@NotBlank private String tenantId;
 	@NotBlank private String templateId;
-	@NotNull @Min(60) private Integer inactivityPeriod = 60;
+	@NotNull @Min(60) private Integer inactivityPeriod;
 	private Set<@Valid Attribute> attributes;
 
 }

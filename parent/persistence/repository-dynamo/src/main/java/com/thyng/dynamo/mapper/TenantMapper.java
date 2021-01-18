@@ -26,7 +26,7 @@ public class TenantMapper implements Mapper<Tenant, Map<String, AttributeValue>>
 		final Tenant tenant = new Tenant();
 		tenant.setId(attributes.get("id").s());
 		tenant.setName(attributes.get("name").s());
-		tenant.setEnabled(attributes.get("enabled").bool());
+		if(attributes.containsKey("enabled")) tenant.setEnabled(attributes.get("enabled").bool());
 		return tenant;
 	}
 	

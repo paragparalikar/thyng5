@@ -32,10 +32,10 @@ public class ThingMapper implements Mapper<Thing, Map<String, AttributeValue>> {
 		final Thing thing = new Thing();
 		thing.setId(attributes.get("id").s());
 		thing.setName(attributes.get("name").s());
-		thing.setTenantId(attributes.get("tenantId").s());
-		thing.setTemplateId(attributes.get("templateId").s());
-		thing.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		thing.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
+		if(attributes.containsKey("tenantId")) thing.setTenantId(attributes.get("tenantId").s());
+		if(attributes.containsKey("templateId")) thing.setTemplateId(attributes.get("templateId").s());
+		if(attributes.containsKey("inactivityPeriod")) thing.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
+		if(attributes.containsKey("attributes")) thing.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
 		return thing;
 	}
 

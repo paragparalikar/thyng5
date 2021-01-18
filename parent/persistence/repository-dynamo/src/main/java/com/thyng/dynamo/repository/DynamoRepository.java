@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Nameable;
 import com.thyng.dynamo.mapper.Mapper;
-import com.thyng.dynamo.mapper.Mappers;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.Repository;
 import com.thyng.util.Strings;
@@ -39,20 +38,12 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 	public List<T> findAll() {
 		return client.scan(ScanRequest.builder()
 				.tableName(tableName)
-				.select(Select.COUNT)
+				.select(Select.SPECIFIC_ATTRIBUTES)
+				.projectionExpression("id,#n")
+				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
 				.build()).items().stream()
-		.map(mapper::map)
-		.collect(Collectors.toList());
-	}
-	
-	@Override
-	public Map<String, String> findAllNames() {
-		return Mappers.mapNames(client.scan(ScanRequest.builder()
-			.tableName(tableName)
-			.select(Select.SPECIFIC_ATTRIBUTES)
-			.projectionExpression("id,#n")
-			.expressionAttributeNames(Collections.singletonMap("#n", "name"))
-			.build()).items());
+				.map(mapper::map)
+				.collect(Collectors.toList());
 	}
 	
 	private String nextId() {
