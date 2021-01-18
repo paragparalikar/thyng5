@@ -1,13 +1,21 @@
 package com.thyng.dynamo.mapper;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+public interface Mapper<T, V> {
+	
+	T map(V attributes);
+	
+	default Set<T> map(Collection<V> attributes) {
+		return attributes.stream().map(this::map).collect(Collectors.toSet());
+	}
+	
+	V unmap(T entity);
 
-public interface Mapper<T> {
-	
-	T map(Map<String, AttributeValue> attributes);
-	
-	Map<String, AttributeValue> unmap(T entity);
+	default Set<V> unmap(Collection<T> entities) {
+		return entities.stream().map(this::unmap).collect(Collectors.toSet());
+	}
 
 }

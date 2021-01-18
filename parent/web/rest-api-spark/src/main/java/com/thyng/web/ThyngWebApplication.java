@@ -10,9 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Module;
-import com.thyng.domain.model.Actuator;
 import com.thyng.domain.model.Gateway;
-import com.thyng.domain.model.Sensor;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
@@ -74,8 +72,6 @@ public class ThyngWebApplication {
 				new Controller<Tenant>("/" + Names.TENANT, objectMapper, context.getTenantRepository()),
 				new TenantAwareController<Gateway>("/" + Names.GATEWAY, objectMapper, context.getGatewayRepository()),
 				new TenantAwareController<Template>("/" + Names.TEMPALTE, objectMapper, context.getTemplateRepository()),
-				new TenantAwareController<Sensor>("/" + Names.SENSOR, objectMapper, context.getSensorRepository()),
-				new TenantAwareController<Actuator>("/" + Names.ACTUATOR, objectMapper, context.getActuatorRepository()),
 				new TenantAwareController<Thing>("/" + Names.THING, objectMapper, context.getThingRepository()),
 				new TenantAwareController<Trigger>("/" + Names.TRIGGER, objectMapper, context.getTriggerRepository()));
 		

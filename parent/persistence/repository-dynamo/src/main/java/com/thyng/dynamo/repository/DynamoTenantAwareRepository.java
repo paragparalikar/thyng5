@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.dynamo.mapper.Mapper;
+import com.thyng.dynamo.mapper.Mappers;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.TenantAwareRepository;
 import com.thyng.util.Strings;
@@ -29,7 +30,7 @@ import software.amazon.awssdk.services.dynamodb.model.Select;
 public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements TenantAwareRepository<T> {
 
 	@NonNull private final String tableName;
-	@NonNull private final Mapper<T> mapper;
+	@NonNull private final Mapper<T, Map<String, AttributeValue>> mapper;
 	@NonNull private final DynamoDbClient client;
 	@NonNull private final CounterRepository counterRepository;
 
@@ -41,6 +42,18 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				.build()).items().stream()
 				.map(mapper::map)
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public Map<String, String> findAllNames(String tenantId) {
+		return Mappers.mapNames(client.query(QueryRequest.builder()
+				.tableName(tableName)
+				.select(Select.SPECIFIC_ATTRIBUTES)
+				.keyConditionExpression("tenantId = :tenantId")
+				.projectionExpression("id,#n")
+				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
+				.expressionAttributeValues(Collections.singletonMap(":tenantId", AttributeValue.builder().s(tenantId).build()))
+				.build()).items());
 	}
 
 	@Override
@@ -55,7 +68,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				.collect(Collectors.toList());
 	}
 
-	private String nextId() {
+	protected String nextId() {
 		return Long.toString(counterRepository.addAndGet(tableName, 1L), Character.MAX_RADIX);
 	}
 	

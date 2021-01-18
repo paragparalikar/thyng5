@@ -10,7 +10,7 @@ import com.thyng.domain.model.Window;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class WindowMapper implements Mapper<Window> {
+public class WindowMapper implements Mapper<Window, Map<String, AttributeValue>> {
 
 	@Override
 	public Map<String, AttributeValue> unmap(Window window){

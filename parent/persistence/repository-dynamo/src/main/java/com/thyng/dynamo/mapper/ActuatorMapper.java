@@ -1,32 +1,29 @@
 package com.thyng.dynamo.mapper;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.thyng.domain.model.Actuator;
+import com.thyng.util.Strings;
 
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class ActuatorMapper implements Mapper<Actuator> {
+@RequiredArgsConstructor
+public class ActuatorMapper implements Mapper<Actuator, String> {
 
+	@NonNull private final String delimiter;
+	
 	@Override
-	public Map<String, AttributeValue> unmap(Actuator item) {
-		final Map<String, AttributeValue> map = new HashMap<>();
-		map.put("id", AttributeValue.builder().s(item.getId()).build());
-		map.put("name", AttributeValue.builder().s(item.getName()).build());
-		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
-		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
-		return map;
+	public String unmap(Actuator item) {
+		if(null == item) return "";
+		return String.join(delimiter, item.getId(), item.getName());
 	}
 
 	@Override
-	public Actuator map(Map<String, AttributeValue> attributes) {
-		if(null == attributes || attributes.isEmpty()) return null;
+	public Actuator map(String text) {
+		if(Strings.isBlank(text)) return null;
 		final Actuator item = new Actuator();
-		item.setId(attributes.get("id").s());
-		item.setName(attributes.get("name").s());
-		item.setTenantId(attributes.get("tenantId").s());
-		item.setTemplateId(attributes.get("templateId").s());
+		final String[] tokens = text.split(delimiter);
+		item.setId(tokens[0]);
+		item.setName(tokens[1]);
 		return item;
 	}
 }

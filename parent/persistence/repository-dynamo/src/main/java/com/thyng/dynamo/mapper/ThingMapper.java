@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class ThingMapper implements Mapper<Thing> {
+public class ThingMapper implements Mapper<Thing, Map<String, AttributeValue>> {
 	
-	@NonNull private final AttributesMapper attributesMapper;
+	@NonNull private final AttributeMapper attributesMapper;
 
 	@Override
 	public Map<String, AttributeValue> unmap(Thing item) {
@@ -22,7 +22,7 @@ public class ThingMapper implements Mapper<Thing> {
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
 		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
 		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		map.put("attributes", AttributeValue.builder().m(attributesMapper.unmap(item.getAttributes())).build());
+		map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
 		return map;
 	}
 
@@ -35,7 +35,7 @@ public class ThingMapper implements Mapper<Thing> {
 		thing.setTenantId(attributes.get("tenantId").s());
 		thing.setTemplateId(attributes.get("templateId").s());
 		thing.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		thing.setAttributes(attributesMapper.map(attributes.get("attributes").m()));
+		thing.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
 		return thing;
 	}
 

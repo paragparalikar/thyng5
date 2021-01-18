@@ -1,5 +1,6 @@
 package com.thyng.dynamo.repository;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Nameable;
 import com.thyng.dynamo.mapper.Mapper;
+import com.thyng.dynamo.mapper.Mappers;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.Repository;
 import com.thyng.util.Strings;
@@ -29,7 +31,7 @@ import software.amazon.awssdk.services.dynamodb.model.Select;
 public class DynamoRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String> {
 
 	@NonNull private final String tableName;
-	@NonNull private final Mapper<T> mapper;
+	@NonNull private final Mapper<T, Map<String, AttributeValue>> mapper;
 	@NonNull private final DynamoDbClient client;
 	@NonNull private final CounterRepository counterRepository;
 
@@ -41,6 +43,16 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 				.build()).items().stream()
 		.map(mapper::map)
 		.collect(Collectors.toList());
+	}
+	
+	@Override
+	public Map<String, String> findAllNames() {
+		return Mappers.mapNames(client.scan(ScanRequest.builder()
+			.tableName(tableName)
+			.select(Select.SPECIFIC_ATTRIBUTES)
+			.projectionExpression("id,#n")
+			.expressionAttributeNames(Collections.singletonMap("#n", "name"))
+			.build()).items());
 	}
 	
 	private String nextId() {

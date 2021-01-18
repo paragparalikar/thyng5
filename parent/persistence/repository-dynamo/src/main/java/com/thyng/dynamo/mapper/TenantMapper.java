@@ -8,7 +8,7 @@ import com.thyng.domain.model.Tenant;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class TenantMapper implements Mapper<Tenant> {
+public class TenantMapper implements Mapper<Tenant, Map<String, AttributeValue>> {
 
 	@Override
 	public Map<String, AttributeValue> unmap(Tenant tenant) {

@@ -26,8 +26,8 @@ public class Controller<T extends Identifiable<String> & Nameable> implements Li
 	@Override
 	public void start() throws Exception {
 		Spark.path(path, () -> {
-			Spark.get("", (request, response) -> repository.findAll());
-			Spark.get("/", (request, response) -> repository.findAll());
+			Spark.get("", (request, response) -> repository.findAllNames());
+			Spark.get("/", (request, response) -> repository.findAllNames());
 			Spark.get("/:id", (request, response) -> repository.findById(request.params(":id")));
 			Spark.post("", (request, response) -> repository.save(transform(request)));
 			Spark.post("/", (request, response) -> repository.save(transform(request)));

@@ -8,7 +8,7 @@ import com.thyng.domain.intf.Module;
 import com.thyng.dynamo.command.CreateTableCommand;
 import com.thyng.dynamo.command.CreateTenantAwareTableCommand;
 import com.thyng.dynamo.mapper.ActuatorMapper;
-import com.thyng.dynamo.mapper.AttributesMapper;
+import com.thyng.dynamo.mapper.AttributeMapper;
 import com.thyng.dynamo.mapper.GatewayMapper;
 import com.thyng.dynamo.mapper.SensorMapper;
 import com.thyng.dynamo.mapper.TemplateMapper;
@@ -18,7 +18,7 @@ import com.thyng.dynamo.mapper.TriggerMapper;
 import com.thyng.dynamo.mapper.WindowMapper;
 import com.thyng.dynamo.repository.DynamoCounterRepository;
 import com.thyng.dynamo.repository.DynamoRepository;
-import com.thyng.dynamo.repository.DynamoTemplateAwareRepository;
+import com.thyng.dynamo.repository.DynamoTemplateRepository;
 import com.thyng.dynamo.repository.DynamoTenantAwareRepository;
 import com.thyng.repository.CounterRepository;
 import com.thyng.util.Names;
@@ -57,16 +57,18 @@ public class DynamoRepositoryModule implements Module {
 	}
 	
 	private void createRepositories() {
+		final String delimiter = ",";
 		final WindowMapper windowMapper = new WindowMapper();
-		final AttributesMapper attributesMapper = new AttributesMapper();
+		final SensorMapper sensorMapper = new SensorMapper(delimiter);
+		final ActuatorMapper actuatorMapper = new ActuatorMapper(delimiter);
+		final AttributeMapper attributeMapper = new AttributeMapper(delimiter);
+		final TemplateMapper templateMapper = new TemplateMapper(sensorMapper, actuatorMapper, attributeMapper);
 		final CounterRepository counterRepository = new DynamoCounterRepository(client);
 		context.setCounterRepository(counterRepository);
 		context.setTenantRepository(new DynamoRepository<>(Names.TENANT, new TenantMapper(), client, counterRepository));
 		context.setGatewayRepository(new DynamoTenantAwareRepository<>(Names.GATEWAY, new GatewayMapper(), client, counterRepository));
-		context.setTemplateRepository(new DynamoTenantAwareRepository<>(Names.TEMPALTE, new TemplateMapper(attributesMapper), client, counterRepository));
-		context.setSensorRepository(new DynamoTemplateAwareRepository<>(Names.SENSOR, new SensorMapper(), client, counterRepository));
-		context.setActuatorRepository(new DynamoTemplateAwareRepository<>(Names.ACTUATOR, new ActuatorMapper(), client, counterRepository));
-		context.setThingRepository(new DynamoTemplateAwareRepository<>(Names.THING, new ThingMapper(attributesMapper), client, counterRepository));
+		context.setTemplateRepository(new DynamoTemplateRepository(templateMapper, client, counterRepository));
+		context.setThingRepository(new DynamoTenantAwareRepository<>(Names.THING, new ThingMapper(attributeMapper), client, counterRepository));
 		context.setTriggerRepository(new DynamoTenantAwareRepository<>(Names.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
 	}
 	

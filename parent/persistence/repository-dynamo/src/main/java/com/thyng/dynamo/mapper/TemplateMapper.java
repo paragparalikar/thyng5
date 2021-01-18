@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class TemplateMapper implements Mapper<Template> {
+public class TemplateMapper implements Mapper<Template, Map<String, AttributeValue>> {
 	
-	@NonNull private final AttributesMapper attributesMapper;
+	@NonNull private final SensorMapper sensorMapper;
+	@NonNull private final ActuatorMapper actuatorMapper;
+	@NonNull private final AttributeMapper attributesMapper;
 
 	@Override
 	public Map<String, AttributeValue> unmap(Template item) {
@@ -21,7 +23,9 @@ public class TemplateMapper implements Mapper<Template> {
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
 		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		map.put("attributes", AttributeValue.builder().m(attributesMapper.unmap(item.getAttributes())).build());
+		map.put("sensors", AttributeValue.builder().ss(sensorMapper.unmap(item.getSensors())).build());
+		map.put("actuators", AttributeValue.builder().ss(actuatorMapper.unmap(item.getActuators())).build());
+		map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
 		return map;
 	}
 
@@ -33,7 +37,9 @@ public class TemplateMapper implements Mapper<Template> {
 		template.setName(attributes.get("name").s());
 		template.setTenantId(attributes.get("tenantId").s());
 		template.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		template.setAttributes(attributesMapper.map(attributes.get("attributes").m()));
+		template.setSensors(sensorMapper.map(attributes.get("sensors").ss()));
+		template.setActuators(actuatorMapper.map(attributes.get("actuators").ss()));
+		template.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
 		return template;
 	}
 }

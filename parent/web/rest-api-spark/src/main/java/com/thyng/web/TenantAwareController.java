@@ -25,8 +25,8 @@ public class TenantAwareController<T extends TenantAwareModel> implements Lifecy
 	@Override
 	public void start() throws Exception {
 		Spark.path(path, () -> {
-			Spark.get("", (request, response) -> repository.findAll(tenantId(request)));
-			Spark.get("/", (request, response) -> repository.findAll(tenantId(request)));
+			Spark.get("", (request, response) -> repository.findAllNames(tenantId(request)));
+			Spark.get("/", (request, response) -> repository.findAllNames(tenantId(request)));
 			Spark.get("/:id", (request, response) -> repository.findById(tenantId(request), request.params(":id")));
 			Spark.post("", (request, response) -> repository.save(transform(request)));
 			Spark.post("/", (request, response) -> repository.save(transform(request)));

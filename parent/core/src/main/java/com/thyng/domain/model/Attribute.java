@@ -8,14 +8,18 @@ import javax.validation.constraints.Size;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Nameable;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class Sensor implements Identifiable<String>, Nameable, Serializable {
-	private static final long serialVersionUID = 1L;
-	
+@NoArgsConstructor
+@AllArgsConstructor
+public class Attribute implements Identifiable<String>, Nameable, Serializable {
+	private static final long serialVersionUID = -8647679406655187521L;
+
 	private String id;
 	@NotBlank @Size(max = 255) private String name;
-	@NotBlank @Size(max = 255) private String unit;
-
+	@NotBlank @Size(max = 255) private String value;
+	
 }
