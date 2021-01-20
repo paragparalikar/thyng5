@@ -4,10 +4,10 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thyng.Crud;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Nameable;
-import com.thyng.repository.Repository;
 import com.thyng.util.Throwables;
 
 import lombok.NonNull;
@@ -21,7 +21,7 @@ public class Controller<T extends Identifiable<String> & Nameable> implements Li
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
-	@NonNull private final Repository<T, String> repository;
+	@NonNull private final Crud<T, String> repository;
 
 	@Override
 	public void start() throws Exception {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
 import com.thyng.domain.intf.Lifecycle;
@@ -15,6 +16,7 @@ import com.thyng.domain.model.Gateway;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
+import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
 import com.thyng.util.Names;
 
@@ -77,6 +79,7 @@ public class ThyngWebApplication {
 		final List<Module> modules = modules();
 		final ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		 
 		start(context, modules);
 		stopOnShutdown(context, modules);
@@ -88,6 +91,7 @@ public class ThyngWebApplication {
 				new TenantAwareController<Gateway>("/" + Names.GATEWAY, Gateway.class, objectMapper, context.getGatewayRepository()),
 				new TenantAwareController<Template>("/" + Names.TEMPALTE, Template.class, objectMapper, context.getTemplateRepository()),
 				new TenantAwareController<Thing>("/" + Names.THING, Thing.class, objectMapper, context.getThingRepository()),
+				new TenantAwareController<ThingGroup>("/" + Names.THING_GROUP, ThingGroup.class, objectMapper, context.getThingGroupRepository()),
 				new TenantAwareController<Trigger>("/" + Names.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()));
 		
 		for(Lifecycle controller : controllers) controller.start();

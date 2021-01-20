@@ -13,6 +13,7 @@ import com.thyng.dynamo.mapper.GatewayMapper;
 import com.thyng.dynamo.mapper.SensorMapper;
 import com.thyng.dynamo.mapper.TemplateMapper;
 import com.thyng.dynamo.mapper.TenantMapper;
+import com.thyng.dynamo.mapper.ThingGroupMapper;
 import com.thyng.dynamo.mapper.ThingMapper;
 import com.thyng.dynamo.mapper.TriggerMapper;
 import com.thyng.dynamo.mapper.WindowMapper;
@@ -50,7 +51,8 @@ public class DynamoRepositoryModule implements Module {
 		final List<String> tables = client.listTables().tableNames();
 		if(!tables.contains(Names.COUNTER)) new CreateTableCommand(Names.COUNTER).execute(client);
 		if(!tables.contains(Names.TENANT)) new CreateTableCommand(Names.TENANT).execute(client);
-		Stream.of(Names.ACTUATOR, Names.GATEWAY, Names.SENSOR, Names.TEMPALTE, Names.THING, Names.TRIGGER)
+		Stream.of(Names.ACTUATOR, Names.GATEWAY, Names.SENSOR, Names.TEMPALTE, 
+				Names.THING, Names.THING_GROUP, Names.TRIGGER)
 			.filter(tableName -> !tables.contains(tableName))
 			.map(CreateTenantAwareTableCommand::new)
 			.forEach(command -> command.execute(client));
@@ -69,6 +71,7 @@ public class DynamoRepositoryModule implements Module {
 		context.setGatewayRepository(new DynamoTenantAwareRepository<>(Names.GATEWAY, new GatewayMapper(), client, counterRepository));
 		context.setTemplateRepository(new DynamoTemplateRepository(templateMapper, client, counterRepository));
 		context.setThingRepository(new DynamoTenantAwareRepository<>(Names.THING, new ThingMapper(attributeMapper), client, counterRepository));
+		context.setThingGroupRepository(new DynamoTenantAwareRepository<>(Names.THING_GROUP, new ThingGroupMapper(), client, counterRepository));
 		context.setTriggerRepository(new DynamoTenantAwareRepository<>(Names.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
 	}
 	

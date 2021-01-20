@@ -13,7 +13,7 @@ public class ActuatorMapper implements Mapper<Actuator, String> {
 	
 	@Override
 	public String unmap(Actuator item) {
-		if(null == item) return "";
+		if(null == item) return null;
 		return String.join(delimiter, item.getId(), item.getName());
 	}
 

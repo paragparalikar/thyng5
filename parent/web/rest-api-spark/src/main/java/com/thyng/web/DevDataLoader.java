@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.thyng.Context;
+import com.thyng.domain.enumeration.DataType;
 import com.thyng.domain.model.Actuator;
 import com.thyng.domain.model.Attribute;
 import com.thyng.domain.model.Sensor;
@@ -45,8 +46,8 @@ public class DevDataLoader implements Runnable {
 		final List<Template> templates = context.getTemplateRepository().findAll(tenant.getId());
 		if(templates.isEmpty()) {
 			templates(tenant).forEach(template -> {
-				template.setSensors(sensors(template));
-				template.setActuators(actuators(template));
+				template.getSensors().addAll(sensors(template));
+				template.getActuators().addAll(actuators(template));
 				final Template entity = context.getTemplateRepository().save(template); 
 				createThings(entity);
 			});
@@ -57,7 +58,7 @@ public class DevDataLoader implements Runnable {
 		return IntStream.range(0, 10).boxed().map(index -> {
 			final Template template = new Template();
 			template.setName("Template-"+index);
-			template.setAttributes(attributes());
+			template.getAttributes().addAll(attributes());
 			template.setInactivityPeriod(60 + index);
 			template.setTenantId(tenant.getId());
 			return template;
@@ -77,6 +78,7 @@ public class DevDataLoader implements Runnable {
 			final Sensor sensor = new Sensor();
 			sensor.setName("Sensor-"+index);
 			sensor.setUnit("cm");
+			sensor.setDataType(DataType.NUMBER);
 			return sensor;
 		}).collect(Collectors.toSet());
 	}
@@ -100,6 +102,7 @@ public class DevDataLoader implements Runnable {
 			thing.setTemplateId(template.getId());
 			thing.setName("Thing-"+index);
 			thing.setAttributes(attributes());
+			thing.setInactivityPeriod(300);
 			return thing;
 		}).collect(Collectors.toList());
 	}

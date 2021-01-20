@@ -2,12 +2,11 @@ package com.thyng;
 
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.model.Action;
-import com.thyng.domain.model.AlertAction;
 import com.thyng.domain.model.Gateway;
-import com.thyng.domain.model.MailAlertAction;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
+import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.Repository;
@@ -23,10 +22,9 @@ public class Context implements Lifecycle {
 	private TenantAwareRepository<Gateway> gatewayRepository;
 	private TenantAwareRepository<Template> templateRepository;
 	private TenantAwareRepository<Thing> thingRepository;
+	private TenantAwareRepository<ThingGroup> thingGroupRepository;
 	private TenantAwareRepository<Trigger> triggerRepository;
 	private TenantAwareRepository<Action> actionRepository;
-	private TenantAwareRepository<AlertAction> alertActionRepository;
-	private TenantAwareRepository<MailAlertAction> mailAlertActionRepository;
 	
 	@Override
 	public void start() throws Exception {
@@ -35,12 +33,14 @@ public class Context implements Lifecycle {
 		gatewayRepository.start();
 		templateRepository.start();
 		thingRepository.start();
+		thingGroupRepository.start();
 		triggerRepository.start();
 	}
 	
 	@Override
 	public void stop() throws Exception {
 		triggerRepository.stop();
+		thingGroupRepository.stop();
 		thingRepository.stop();
 		templateRepository.stop();
 		gatewayRepository.stop();

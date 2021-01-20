@@ -13,6 +13,7 @@ public class Names {
 	public static final String ACTUATOR = "actuators";
 	public static final String ATTRIBUTE = "attributes";
 	public static final String THING = "things";
+	public static final String THING_GROUP = "thing-groups";
 	public static final String TRIGGER = "triggers";
 	public static final String ACTION = "actions";
 	

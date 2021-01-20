@@ -2,27 +2,31 @@ package com.thyng.dynamo.mapper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.thyng.domain.model.Thing;
+import com.thyng.util.Collectionz;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class ThingMapper implements Mapper<Thing, Map<String, AttributeValue>> {
+public class ThingMapper implements DynamoMapper<Thing> {
 	
 	@NonNull private final AttributeMapper attributesMapper;
 
 	@Override
 	public Map<String, AttributeValue> unmap(Thing item) {
+		if(null == item) return null;
 		final Map<String, AttributeValue> map = new HashMap<>();
 		map.put("id", AttributeValue.builder().s(item.getId()).build());
 		map.put("name", AttributeValue.builder().s(item.getName()).build());
 		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
 		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
 		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
+		final Set<String> attributes = attributesMapper.unmap(item.getAttributes());
+		if(Collectionz.isNotNullOrEmpty(attributes)) map.put("attributes", AttributeValue.builder().ss(attributes).build());
 		return map;
 	}
 

@@ -1,5 +1,6 @@
 package com.thyng.dynamo.mapper;
 
+import com.thyng.domain.enumeration.DataType;
 import com.thyng.domain.model.Sensor;
 import com.thyng.util.Strings;
 
@@ -13,8 +14,8 @@ public class SensorMapper implements Mapper<Sensor, String> {
 
 	@Override
 	public String unmap(Sensor item) {
-		if(null == item) return "";
-		return String.join(delimiter, item.getId(), item.getName(), item.getUnit());
+		if(null == item) return null;
+		return String.join(delimiter, item.getId(), item.getName(), item.getUnit(), item.getDataType().name());
 	}
 
 	@Override
@@ -25,6 +26,7 @@ public class SensorMapper implements Mapper<Sensor, String> {
 		item.setId(tokens[0]);
 		item.setName(tokens[1]);
 		item.setUnit(tokens[2]);
+		item.setDataType(DataType.valueOf(tokens[3]));
 		return item;
 	}
 

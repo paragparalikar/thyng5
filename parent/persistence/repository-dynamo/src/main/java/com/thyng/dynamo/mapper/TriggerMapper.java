@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue>> {
+public class TriggerMapper implements DynamoMapper<Trigger> {
 
 	@NonNull private final WindowMapper windowMapper;
 	

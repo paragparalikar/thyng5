@@ -20,7 +20,7 @@ public class AttributeMapper implements Mapper<Attribute, String> {
 
 	@Override
 	public String unmap(Attribute item) {
-		if(null == item) return "";
+		if(null == item) return null;
 		return String.join(delimiter, item.getId(), item.getName(), item.getValue());
 	}
 

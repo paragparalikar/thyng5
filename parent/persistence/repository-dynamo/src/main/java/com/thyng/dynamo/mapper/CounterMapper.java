@@ -5,7 +5,7 @@ import java.util.Map;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class CounterMapper implements Mapper<Long, Map<String, AttributeValue>> {
+public class CounterMapper implements DynamoMapper<Long> {
 
 	@Override
 	public Long map(Map<String, AttributeValue> attributes) {

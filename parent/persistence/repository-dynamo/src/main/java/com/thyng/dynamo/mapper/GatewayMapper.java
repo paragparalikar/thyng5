@@ -7,7 +7,7 @@ import com.thyng.domain.model.Gateway;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class GatewayMapper implements Mapper<Gateway, Map<String, AttributeValue>> {
+public class GatewayMapper implements DynamoMapper<Gateway> {
 
 	@Override
 	public Map<String, AttributeValue> unmap(Gateway item) {

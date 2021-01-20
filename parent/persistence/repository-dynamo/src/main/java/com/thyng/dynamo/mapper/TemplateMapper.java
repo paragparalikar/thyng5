@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class TemplateMapper implements Mapper<Template, Map<String, AttributeValue>> {
+public class TemplateMapper implements DynamoMapper<Template> {
 	
 	@NonNull private final SensorMapper sensorMapper;
 	@NonNull private final ActuatorMapper actuatorMapper;
@@ -38,9 +38,9 @@ public class TemplateMapper implements Mapper<Template, Map<String, AttributeVal
 		template.setName(attributes.get("name").s());
 		if(attributes.containsKey("tenantId")) template.setTenantId(attributes.get("tenantId").s());
 		if(attributes.containsKey("inactivityPeriod")) template.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		if(attributes.containsKey("sensors")) template.setSensors(sensorMapper.map(attributes.get("sensors").ss()));
-		if(attributes.containsKey("actuators")) template.setActuators(actuatorMapper.map(attributes.get("actuators").ss()));
-		if(attributes.containsKey("attributes")) template.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
+		if(attributes.containsKey("sensors")) template.getSensors().addAll(sensorMapper.map(attributes.get("sensors").ss()));
+		if(attributes.containsKey("actuators")) template.getActuators().addAll(actuatorMapper.map(attributes.get("actuators").ss()));
+		if(attributes.containsKey("attributes")) template.getAttributes().addAll(attributesMapper.map(attributes.get("attributes").ss()));
 		return template;
 	}
 }

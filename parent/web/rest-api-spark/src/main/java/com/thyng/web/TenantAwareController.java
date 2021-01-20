@@ -3,11 +3,10 @@ package com.thyng.web;
 import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thyng.TenantAwareCrud;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.TenantAwareModel;
-import com.thyng.repository.TenantAwareRepository;
 import com.thyng.util.Throwables;
 
 import lombok.NonNull;
@@ -21,7 +20,7 @@ public class TenantAwareController<T extends TenantAwareModel> implements Lifecy
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
-	@NonNull private final TenantAwareRepository<T> repository;
+	@NonNull private final TenantAwareCrud<T, String> repository;
 
 	@Override
 	public void start() throws Exception {
