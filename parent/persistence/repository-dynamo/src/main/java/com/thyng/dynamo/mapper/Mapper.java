@@ -1,6 +1,7 @@
 package com.thyng.dynamo.mapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ public interface Mapper<T, V> {
 	T map(V attributes);
 	
 	default Set<T> map(Collection<V> attributes) {
-		if(null == attributes || attributes.isEmpty()) return null;
+		if(null == attributes || attributes.isEmpty()) return Collections.emptySet();
 		return attributes.stream().map(this::map).collect(Collectors.toSet());
 	}
 	

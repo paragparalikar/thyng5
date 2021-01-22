@@ -24,7 +24,8 @@ public class Window implements Serializable {
 
 	@NotNull private WindowBase base;
 	@NotNull private WindowType type;
-	@Builder.Default @NotNull @Min(2) private Long tumblingInterval = Duration.ofHours(1).getSeconds();
-	@Builder.Default @NotNull @Min(1) private Long slidingInterval = Duration.ofMinutes(5).getSeconds();
+	@Builder.Default @Min(60) private Long timeout = Duration.ofHours(1).getSeconds();
+	@Builder.Default @Min(2) private Long span = Duration.ofHours(1).getSeconds();
+	@Builder.Default @Min(1) private Long slidingSpan = Duration.ofMinutes(5).getSeconds();
 
 }

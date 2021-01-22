@@ -16,8 +16,9 @@ public class WindowMapper implements Mapper<Window, Map<String, AttributeValue>>
 		return null == window ? null : new AttributeMap(new HashMap<>())
 				.put("base", window.getBase())
 				.put("type", window.getType())
-				.put("tumblingInterval", window.getTumblingInterval())
-				.put("slidingInterval", window.getSlidingInterval());
+				.put("span", window.getSpan())
+				.put("timeout", window.getTimeout())
+				.put("slidingSpan", window.getSlidingSpan());
 	}
 	
 	@Override
@@ -27,8 +28,9 @@ public class WindowMapper implements Mapper<Window, Map<String, AttributeValue>>
 		return Window.builder()
 				.base(map.getEnum("base", WindowBase.class))
 				.type(map.getEnum("type", WindowType.class))
-				.tumblingInterval(map.getLong("tumblingInterval"))
-				.slidingInterval(map.getLong("slidingInterval"))
+				.span(map.getLong("span"))
+				.timeout(map.getLong("timeout"))
+				.slidingSpan(map.getLong("slidingSpan"))
 				.build();
 	}
 	
