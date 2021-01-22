@@ -15,19 +15,20 @@ public class SensorMapper implements Mapper<Sensor, String> {
 	@Override
 	public String unmap(Sensor item) {
 		if(null == item) return null;
-		return String.join(delimiter, item.getId(), item.getName(), item.getUnit(), item.getDataType().name());
+		return String.join(delimiter, item.getId(), item.getName(), 
+				item.getUnit(), item.getDataType().name());
 	}
 
 	@Override
 	public Sensor map(String text) {
 		if(Strings.isBlank(text)) return null;
-		final Sensor item = new Sensor();
 		final String[] tokens = text.split(delimiter);
-		item.setId(tokens[0]);
-		item.setName(tokens[1]);
-		item.setUnit(tokens[2]);
-		item.setDataType(DataType.valueOf(tokens[3]));
-		return item;
+		return Sensor.builder()
+				.id(tokens[0])
+				.name(tokens[1])
+				.unit(tokens[2])
+				.dataType(DataType.valueOf(tokens[3]))
+				.build();
 	}
 
 }

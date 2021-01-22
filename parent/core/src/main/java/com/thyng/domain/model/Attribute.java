@@ -11,8 +11,10 @@ import com.thyng.domain.intf.Nameable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Attribute implements Identifiable<String>, Nameable, Serializable {

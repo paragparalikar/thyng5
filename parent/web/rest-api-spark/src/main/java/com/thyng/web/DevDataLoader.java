@@ -59,7 +59,7 @@ public class DevDataLoader implements Runnable {
 			final Template template = new Template();
 			template.setName("Template-"+index);
 			template.getAttributes().addAll(attributes());
-			template.setInactivityPeriod(60 + index);
+			template.setInactivityPeriod(60l + index);
 			template.setTenantId(tenant.getId());
 			return template;
 		}).collect(Collectors.toList());
@@ -101,8 +101,8 @@ public class DevDataLoader implements Runnable {
 			thing.setTenantId(template.getTenantId());
 			thing.setTemplateId(template.getId());
 			thing.setName("Thing-"+index);
-			thing.setAttributes(attributes());
-			thing.setInactivityPeriod(300);
+			thing.getAttributes().addAll(attributes());
+			thing.setInactivityPeriod(300l);
 			return thing;
 		}).collect(Collectors.toList());
 	}

@@ -2,44 +2,41 @@ package com.thyng.dynamo.mapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.thyng.domain.model.Thing;
-import com.thyng.util.Collectionz;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class ThingMapper implements DynamoMapper<Thing> {
+public class ThingMapper implements Mapper<Thing, Map<String, AttributeValue>> {
 	
 	@NonNull private final AttributeMapper attributesMapper;
 
 	@Override
 	public Map<String, AttributeValue> unmap(Thing item) {
-		if(null == item) return null;
-		final Map<String, AttributeValue> map = new HashMap<>();
-		map.put("id", AttributeValue.builder().s(item.getId()).build());
-		map.put("name", AttributeValue.builder().s(item.getName()).build());
-		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
-		map.put("templateId", AttributeValue.builder().s(item.getTemplateId()).build());
-		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		final Set<String> attributes = attributesMapper.unmap(item.getAttributes());
-		if(Collectionz.isNotNullOrEmpty(attributes)) map.put("attributes", AttributeValue.builder().ss(attributes).build());
-		return map;
+		return null == item ? null : new AttributeMap(new HashMap<>())
+			.put("id", item.getId())
+			.put("name", item.getName())
+			.put("tenantId", item.getTenantId())
+			.put("templateId", item.getTemplateId())
+			.put("inactivityPeriod", item.getInactivityPeriod())
+			.put("attributes", attributesMapper.unmap(item.getAttributes()));
 	}
 
 	@Override
 	public Thing map(Map<String, AttributeValue> attributes) {
 		if(null == attributes || attributes.isEmpty()) return null;
-		final Thing thing = new Thing();
-		thing.setId(attributes.get("id").s());
-		thing.setName(attributes.get("name").s());
-		if(attributes.containsKey("tenantId")) thing.setTenantId(attributes.get("tenantId").s());
-		if(attributes.containsKey("templateId")) thing.setTemplateId(attributes.get("templateId").s());
-		if(attributes.containsKey("inactivityPeriod")) thing.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		if(attributes.containsKey("attributes")) thing.setAttributes(attributesMapper.map(attributes.get("attributes").ss()));
+		final AttributeMap map = new AttributeMap(attributes);
+		final Thing thing = Thing.builder()
+				.id(map.getS("id"))
+				.name(map.getS("name"))
+				.tenantId(map.getS("tenantId"))
+				.templateId(map.getS("templateId"))
+				.inactivityPeriod(map.getLong("inactivityPeriod"))
+				.build();
+		thing.getAttributes().addAll(attributesMapper.map(map.getSs("attributes")));
 		return thing;
 	}
 

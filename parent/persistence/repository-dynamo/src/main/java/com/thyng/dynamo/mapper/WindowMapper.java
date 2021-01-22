@@ -1,6 +1,5 @@
 package com.thyng.dynamo.mapper;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,28 +9,27 @@ import com.thyng.domain.model.Window;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class WindowMapper implements DynamoMapper<Window> {
+public class WindowMapper implements Mapper<Window, Map<String, AttributeValue>> {
 
 	@Override
 	public Map<String, AttributeValue> unmap(Window window){
-		if(null == window) return Collections.emptyMap();
-		final Map<String, AttributeValue> map = new HashMap<>();
-		map.put("base", AttributeValue.builder().s(window.getBase().toString()).build());
-		map.put("type", AttributeValue.builder().s(window.getType().toString()).build());
-		map.put("tumblingInterval", AttributeValue.builder().n(window.getTumblingInterval().toString()).build());
-		map.put("slidingInterval", AttributeValue.builder().n(window.getSlidingInterval().toString()).build());
-		return map;
+		return null == window ? null : new AttributeMap(new HashMap<>())
+				.put("base", window.getBase())
+				.put("type", window.getType())
+				.put("tumblingInterval", window.getTumblingInterval())
+				.put("slidingInterval", window.getSlidingInterval());
 	}
 	
 	@Override
 	public Window map(Map<String, AttributeValue> attributes) {
 		if(null == attributes || attributes.isEmpty()) return null;
-		final Window item = new Window();
-		item.setBase(WindowBase.valueOf(attributes.get("base").s()));
-		item.setType(WindowType.valueOf(attributes.get("type").s()));
-		item.setSlidingInterval(Long.parseLong(attributes.get("slidingInterval").n()));
-		item.setTumblingInterval(Long.parseLong(attributes.get("tumblingInterval").n()));
-		return item;
+		final AttributeMap map = new AttributeMap(attributes);
+		return Window.builder()
+				.base(map.getEnum("base", WindowBase.class))
+				.type(map.getEnum("type", WindowType.class))
+				.tumblingInterval(map.getLong("tumblingInterval"))
+				.slidingInterval(map.getLong("slidingInterval"))
+				.build();
 	}
 	
 }

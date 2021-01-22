@@ -20,10 +20,7 @@ public class ActuatorMapper implements Mapper<Actuator, String> {
 	@Override
 	public Actuator map(String text) {
 		if(Strings.isBlank(text)) return null;
-		final Actuator item = new Actuator();
 		final String[] tokens = text.split(delimiter);
-		item.setId(tokens[0]);
-		item.setName(tokens[1]);
-		return item;
+		return new Actuator(tokens[0], tokens[1]);
 	}
 }

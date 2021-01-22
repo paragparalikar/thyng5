@@ -11,9 +11,15 @@ import com.thyng.domain.enumeration.Language;
 import com.thyng.domain.enumeration.ThingGroupType;
 import com.thyng.domain.intf.TenantAwareModel;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ThingGroup implements TenantAwareModel {
 	private static final long serialVersionUID = -8917862417622815872L;
 

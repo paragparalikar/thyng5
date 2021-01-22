@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.thyng.domain.model.Template;
-import com.thyng.util.Collectionz;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class TemplateMapper implements DynamoMapper<Template> {
+public class TemplateMapper implements Mapper<Template, Map<String, AttributeValue>> {
 	
 	@NonNull private final SensorMapper sensorMapper;
 	@NonNull private final ActuatorMapper actuatorMapper;
@@ -19,28 +18,29 @@ public class TemplateMapper implements DynamoMapper<Template> {
 
 	@Override
 	public Map<String, AttributeValue> unmap(Template item) {
-		final Map<String, AttributeValue> map = new HashMap<>();
-		map.put("id", AttributeValue.builder().s(item.getId()).build());
-		map.put("name", AttributeValue.builder().s(item.getName()).build());
-		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
-		map.put("inactivityPeriod", AttributeValue.builder().n(String.valueOf(item.getInactivityPeriod())).build());
-		if(Collectionz.isNotNullOrEmpty(item.getSensors())) map.put("sensors", AttributeValue.builder().ss(sensorMapper.unmap(item.getSensors())).build());
-		if(Collectionz.isNotNullOrEmpty(item.getActuators())) map.put("actuators", AttributeValue.builder().ss(actuatorMapper.unmap(item.getActuators())).build());
-		if(Collectionz.isNotNullOrEmpty(item.getAttributes())) map.put("attributes", AttributeValue.builder().ss(attributesMapper.unmap(item.getAttributes())).build());
-		return map;
+		return null == item ? null : new AttributeMap(new HashMap<>())
+			.put("id", item.getId())
+			.put("name", item.getName())
+			.put("tenantId", item.getTenantId())
+			.put("inactivityPeriod", item.getInactivityPeriod())
+			.put("sensors", sensorMapper.unmap(item.getSensors()))
+			.put("actuators", actuatorMapper.unmap(item.getActuators()))
+			.put("attributes", attributesMapper.unmap(item.getAttributes()));
 	}
 
 	@Override
 	public Template map(Map<String, AttributeValue> attributes) {
 		if(null == attributes || attributes.isEmpty()) return null;
-		final Template template = new Template();
-		template.setId(attributes.get("id").s());
-		template.setName(attributes.get("name").s());
-		if(attributes.containsKey("tenantId")) template.setTenantId(attributes.get("tenantId").s());
-		if(attributes.containsKey("inactivityPeriod")) template.setInactivityPeriod(Integer.parseInt(attributes.get("inactivityPeriod").n()));
-		if(attributes.containsKey("sensors")) template.getSensors().addAll(sensorMapper.map(attributes.get("sensors").ss()));
-		if(attributes.containsKey("actuators")) template.getActuators().addAll(actuatorMapper.map(attributes.get("actuators").ss()));
-		if(attributes.containsKey("attributes")) template.getAttributes().addAll(attributesMapper.map(attributes.get("attributes").ss()));
+		final AttributeMap map = new AttributeMap(attributes);
+		final Template template = Template.builder()
+			.id(map.getS("id"))
+			.name(map.getS("name"))
+			.tenantId(map.getS("tenantId"))
+			.inactivityPeriod(map.getLong("inactivityPeriod"))
+			.build();
+		template.getSensors().addAll(sensorMapper.map(map.getSs("sensors")));
+		template.getActuators().addAll(actuatorMapper.map(map.getSs("actuators")));
+		template.getAttributes().addAll(attributesMapper.map(map.getSs("attributes")));
 		return template;
 	}
 }

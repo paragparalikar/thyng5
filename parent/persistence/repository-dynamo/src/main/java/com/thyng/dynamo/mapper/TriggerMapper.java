@@ -12,38 +12,38 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @RequiredArgsConstructor
-public class TriggerMapper implements DynamoMapper<Trigger> {
+public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue>> {
 
 	@NonNull private final WindowMapper windowMapper;
 	
 	@Override
 	public Trigger map(Map<String, AttributeValue> attributes) {
-		if(null == attributes || attributes.isEmpty()) return null;
-		final Trigger item = new Trigger();
-		item.setId(attributes.get("id").s());
-		item.setName(attributes.get("name").s());
-		if(attributes.containsKey("tenantId")) item.setTenantId(attributes.get("tenantId").s());
-		if(attributes.containsKey("enabled")) item.setEnabled(attributes.get("enabled").bool());
-		if(attributes.containsKey("window")) item.setWindow(windowMapper.map(attributes.get("window").m()));
-		if(attributes.containsKey("language")) item.setLanguage(Language.valueOf(attributes.get("language").s()));
-		if(attributes.containsKey("eventType")) item.setEventType(EventType.valueOf(attributes.get("eventType").s()));
-		if(attributes.containsKey("thingSelectionScript")) item.setThingSelectionScript(attributes.get("thingSelectionScript").s());
-		if(attributes.containsKey("evaluationScript")) item.setEvaluationScript(attributes.get("evaluationScript").s());
-		return item;
+		final AttributeMap map = new AttributeMap(attributes);
+		final Trigger trigger = Trigger.builder()
+			.id(map.getS("id"))
+			.name(map.getS("name"))
+			.script(map.getS("script"))
+			.tenantId(map.getS("tenantId"))
+			.enabled(map.getBool("enabled"))
+			.window(windowMapper.map(map.getM("window")))
+			.language(map.getEnum("language", Language.class))
+			.eventType(map.getEnum("eventType", EventType.class))
+			.build();
+		trigger.getThingGroupIds().addAll(map.getSs("thingGroupIds"));
+		return trigger;
 	}
 	
 	@Override
 	public Map<String, AttributeValue> unmap(Trigger item) {
-		final Map<String, AttributeValue> map = new HashMap<>();
-		map.put("id", AttributeValue.builder().s(item.getId()).build());
-		map.put("name", AttributeValue.builder().s(item.getName()).build());
-		map.put("tenantId", AttributeValue.builder().s(item.getTenantId()).build());
-		map.put("enabled", AttributeValue.builder().bool(item.getEnabled()).build());
-		map.put("language", AttributeValue.builder().s(String.valueOf(item.getLanguage())).build());
-		map.put("eventType", AttributeValue.builder().s(item.getEventType().toString()).build());
-		map.put("thingSelectionScript", AttributeValue.builder().s(item.getThingSelectionScript()).build());
-		map.put("evaluationScript", AttributeValue.builder().s(item.getEvaluationScript()).build());
-		map.put("window", AttributeValue.builder().m(windowMapper.unmap(item.getWindow())).build());
-		return map;
+		return null == item ? null : new AttributeMap(new HashMap<>())
+				.put("id", item.getId())
+				.put("name", item.getName())
+				.put("script", item.getScript())
+				.put("tenantId", item.getTenantId())
+				.put("enabled", item.getEnabled())
+				.put("window", windowMapper.unmap(item.getWindow()))
+				.put("language", item.getLanguage())
+				.put("eventType", item.getEventType())
+				.put("thingGroupIds", item.getThingGroupIds());
 	}
 }
