@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
+import com.thyng.domain.enumeration.ActionType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,5 +24,18 @@ public class MailAction extends Action {
 	@NotBlank private String subject;
 	@NotBlank private String content;
 	private final Set<@NotBlank String> userGroupIds = new HashSet<>();
+	
+	@Override
+	public ActionType getActionType() {
+		return ActionType.MAIL;
+	}
+	
+	@Override
+	public void setActionType(ActionType actionType) {
+		if(!ActionType.MAIL.equals(actionType)) {
+			throw new IllegalArgumentException();
+		}
+		super.setActionType(ActionType.MAIL);
+	}
 
 }

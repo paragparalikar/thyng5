@@ -20,6 +20,7 @@ import com.thyng.dynamo.mapper.TriggerMapper;
 import com.thyng.dynamo.mapper.UserGroupMapper;
 import com.thyng.dynamo.mapper.UserMapper;
 import com.thyng.dynamo.mapper.WindowMapper;
+import com.thyng.dynamo.repository.DynamoActionRepository;
 import com.thyng.dynamo.repository.DynamoCounterRepository;
 import com.thyng.dynamo.repository.DynamoRepository;
 import com.thyng.dynamo.repository.DynamoTemplateRepository;
@@ -76,7 +77,7 @@ public class DynamoRepositoryModule implements Module {
 		context.setThingRepository(new DynamoTenantAwareRepository<>(Names.THING, new ThingMapper(attributeMapper), client, counterRepository));
 		context.setThingGroupRepository(new DynamoTenantAwareRepository<>(Names.THING_GROUP, new ThingGroupMapper(), client, counterRepository));
 		context.setTriggerRepository(new DynamoTenantAwareRepository<>(Names.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
-		context.setActionRepository(new DynamoTenantAwareRepository<>(Names.ACTION, new ActionMapper(), client, counterRepository));
+		context.setActionRepository(new DynamoActionRepository(Names.ACTION, new ActionMapper(), client, counterRepository));
 		context.setUserRepository(new DynamoTenantAwareRepository<>(Names.USER, new UserMapper(attributeMapper), client, counterRepository));
 		context.setUserGroupRepository(new DynamoTenantAwareRepository<>(Names.USER_GROUP, new UserGroupMapper(), client, counterRepository));
 	}

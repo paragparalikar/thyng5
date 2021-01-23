@@ -56,7 +56,6 @@ public class ActionMapper implements Mapper<Action, Map<String, AttributeValue>>
 				.put("id", entity.getId())
 				.put("name", entity.getName())
 				.put("tenantId", entity.getTenantId())
-				.put("type", entity.getActionType())
 				.put("enabled", entity.getEnabled())
 				.put("rateLimit", entity.getRateLimit());
 	}
@@ -64,6 +63,7 @@ public class ActionMapper implements Mapper<Action, Map<String, AttributeValue>>
 	private AttributeMap unmapMailAction(Action entity) {
 		final MailAction action = MailAction.class.cast(entity);
 		return new AttributeMap(new HashMap<>())
+				.put("type", ActionType.MAIL)
 				.put("userGroupIds", action.getUserGroupIds())
 				.put("subject", action.getSubject())
 				.put("content", action.getContent());
