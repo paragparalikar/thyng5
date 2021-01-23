@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import com.thyng.domain.intf.Module;
 import com.thyng.dynamo.command.CreateTableCommand;
 import com.thyng.dynamo.command.CreateTenantAwareTableCommand;
+import com.thyng.dynamo.mapper.ActionMapper;
 import com.thyng.dynamo.mapper.ActuatorMapper;
 import com.thyng.dynamo.mapper.AttributeMapper;
 import com.thyng.dynamo.mapper.GatewayMapper;
@@ -16,6 +17,8 @@ import com.thyng.dynamo.mapper.TenantMapper;
 import com.thyng.dynamo.mapper.ThingGroupMapper;
 import com.thyng.dynamo.mapper.ThingMapper;
 import com.thyng.dynamo.mapper.TriggerMapper;
+import com.thyng.dynamo.mapper.UserGroupMapper;
+import com.thyng.dynamo.mapper.UserMapper;
 import com.thyng.dynamo.mapper.WindowMapper;
 import com.thyng.dynamo.repository.DynamoCounterRepository;
 import com.thyng.dynamo.repository.DynamoRepository;
@@ -52,7 +55,7 @@ public class DynamoRepositoryModule implements Module {
 		if(!tables.contains(Names.COUNTER)) new CreateTableCommand(Names.COUNTER).execute(client);
 		if(!tables.contains(Names.TENANT)) new CreateTableCommand(Names.TENANT).execute(client);
 		Stream.of(Names.ACTUATOR, Names.GATEWAY, Names.SENSOR, Names.TEMPALTE, 
-				Names.THING, Names.THING_GROUP, Names.TRIGGER)
+				Names.THING, Names.THING_GROUP, Names.TRIGGER, Names.ACTION, Names.USER, Names.USER_GROUP)
 			.filter(tableName -> !tables.contains(tableName))
 			.map(CreateTenantAwareTableCommand::new)
 			.forEach(command -> command.execute(client));
@@ -73,6 +76,9 @@ public class DynamoRepositoryModule implements Module {
 		context.setThingRepository(new DynamoTenantAwareRepository<>(Names.THING, new ThingMapper(attributeMapper), client, counterRepository));
 		context.setThingGroupRepository(new DynamoTenantAwareRepository<>(Names.THING_GROUP, new ThingGroupMapper(), client, counterRepository));
 		context.setTriggerRepository(new DynamoTenantAwareRepository<>(Names.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
+		context.setActionRepository(new DynamoTenantAwareRepository<>(Names.ACTION, new ActionMapper(), client, counterRepository));
+		context.setUserRepository(new DynamoTenantAwareRepository<>(Names.USER, new UserMapper(attributeMapper), client, counterRepository));
+		context.setUserGroupRepository(new DynamoTenantAwareRepository<>(Names.USER_GROUP, new UserGroupMapper(), client, counterRepository));
 	}
 	
 	private DynamoDbClient client() {

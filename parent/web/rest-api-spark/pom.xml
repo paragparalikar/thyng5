@@ -24,10 +24,6 @@
 			<artifactId>spark-core</artifactId>
 			<version>${spark.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>

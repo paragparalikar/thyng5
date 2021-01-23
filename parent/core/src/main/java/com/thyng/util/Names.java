@@ -16,5 +16,7 @@ public class Names {
 	public static final String THING_GROUP = "thing-groups";
 	public static final String TRIGGER = "triggers";
 	public static final String ACTION = "actions";
+	public static final String USER = "users";
+	public static final String USER_GROUP = "user-groups";
 	
 }

@@ -7,7 +7,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ActionType {
 
-	ALERT("Alert"), WEBHOOK("Webhook"), ACTUATE("Actuate");
+	SMS("SMS"), 
+	MAIL("Mail"),
+	POPUP("Popup"), 
+	PUSH_MESSAGE("Push Message"), 
+	WEBHOOK("Webhook"), 
+	ACTUATE("Actuate");
 	
 	private final String displayName;
 }

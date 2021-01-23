@@ -1,11 +1,9 @@
 package com.thyng.domain.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +16,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class MailAlertAction extends AlertAction {
+public class MailAction extends Action {
 	private static final long serialVersionUID = 1L;
 
-	@NotNull @NotEmpty private Set<@Email String> to;
 	@NotBlank private String subject;
 	@NotBlank private String content;
+	private final Set<@NotBlank String> userGroupIds = new HashSet<>();
 
 }
