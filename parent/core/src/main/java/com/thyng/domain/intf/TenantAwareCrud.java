@@ -1,12 +1,11 @@
-package com.thyng;
+package com.thyng.domain.intf;
 
 import java.util.List;
-
-import com.thyng.domain.intf.TenantAwareModel;
+import java.util.Map;
 
 public interface TenantAwareCrud<T extends TenantAwareModel, ID> {
 	
-	List<T> findAll();
+	Map<ID, T> findAll();
 	
 	List<T> findAll(String tenantId);
 	

@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import software.amazon.awssdk.services.dynamodb.model.Select;
 
 @Slf4j
@@ -34,13 +35,24 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 	@NonNull private final CounterRepository counterRepository;
 
 	@Override
-	public List<T> findAll() {
-		return client.scan(ScanRequest.builder()
-				.tableName(tableName)
-				.select(Select.ALL_ATTRIBUTES)
-				.build()).items().stream()
-				.map(mapper::map)
-				.collect(Collectors.toList());
+	public Map<String, T> findAll() {
+		final Map<String, T> items = new HashMap<>();
+		ScanResponse response = null;
+		Map<String, AttributeValue> lastEvaluatedKey = null;
+		do {
+			response = client.scan(ScanRequest.builder()
+					.tableName(tableName)
+					.select(Select.ALL_ATTRIBUTES)
+					.build());
+			response.items().stream()
+					.map(mapper::map)
+					.forEach(item -> items.put(item.getId(), item));
+			lastEvaluatedKey = response.lastEvaluatedKey();
+		}while(null != response 
+			&& response.hasLastEvaluatedKey()
+			&& null != lastEvaluatedKey 
+			&& !lastEvaluatedKey.isEmpty());
+		return items;
 	}
 
 	@Override

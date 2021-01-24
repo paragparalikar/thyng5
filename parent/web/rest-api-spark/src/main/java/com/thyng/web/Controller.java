@@ -4,7 +4,7 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thyng.Crud;
+import com.thyng.domain.intf.Crud;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Nameable;

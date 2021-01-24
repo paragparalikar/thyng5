@@ -1,9 +1,6 @@
-package com.thyng;
+package com.thyng.domain.intf;
 
 import java.util.List;
-
-import com.thyng.domain.intf.Identifiable;
-import com.thyng.domain.intf.Nameable;
 
 public interface Crud<T extends Identifiable<ID> & Nameable, ID> {
 	

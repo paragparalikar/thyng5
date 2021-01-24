@@ -9,5 +9,6 @@
   <packaging>pom</packaging>
   <modules>
   	<module>repository-dynamo</module>
+  	<module>repository-map</module>
   </modules>
 </project>

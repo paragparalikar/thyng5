@@ -4,8 +4,8 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thyng.TenantAwareCrud;
 import com.thyng.domain.intf.Lifecycle;
+import com.thyng.domain.intf.TenantAwareCrud;
 import com.thyng.domain.intf.TenantAwareModel;
 import com.thyng.util.Throwables;
 

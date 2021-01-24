@@ -98,7 +98,8 @@ public class ThyngWebApplication {
 				new TenantAwareController<Trigger>("/" + Names.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()),
 				new TenantAwareController<Action>("/" + Names.ACTION, Action.class, objectMapper, context.getActionRepository()),
 				new TenantAwareController<User>("/" + Names.USER, User.class, objectMapper, context.getUserRepository()),
-				new TenantAwareController<UserGroup>("/" + Names.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()));
+				new TenantAwareController<UserGroup>("/" + Names.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()),
+				new MetricController("/" + Names.METRIC, objectMapper, context.getCacheService(), context.getMetricService()));
 		for(Lifecycle controller : controllers) controller.start();
 	}
 	

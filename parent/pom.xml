@@ -84,6 +84,5 @@
 		<module>core</module>
 		<module>web</module>
 		<module>persistence</module>
-		<module>cache</module>
 	</modules>
 </project>

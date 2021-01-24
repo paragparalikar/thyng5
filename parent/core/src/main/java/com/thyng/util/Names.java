@@ -18,5 +18,6 @@ public class Names {
 	public static final String ACTION = "actions";
 	public static final String USER = "users";
 	public static final String USER_GROUP = "user-groups";
+	public static final String METRIC = "metrics";
 	
 }

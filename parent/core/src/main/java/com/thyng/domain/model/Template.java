@@ -1,6 +1,7 @@
 package com.thyng.domain.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -31,4 +32,11 @@ public class Template implements TenantAwareModel {
 	private final Set<@Valid Sensor> sensors = new HashSet<>();
 	private final Set<@Valid Actuator> actuators = new HashSet<>();
 	private final Set<@Valid Attribute> attributes = new HashSet<>();
+	
+	public Sensor sensor(String id) {
+		return sensors.stream()
+				.filter(sensor -> Objects.equals(id, sensor.getId()))
+				.findFirst()
+				.orElse(null);
+	}
 }

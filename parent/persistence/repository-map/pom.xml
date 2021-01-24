@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.thyng</groupId>
-		<artifactId>cache</artifactId>
+		<artifactId>persistence</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>hazelcast-member</artifactId>
+	<artifactId>repository-map</artifactId>
 
 	<dependencies>
 		<dependency>
