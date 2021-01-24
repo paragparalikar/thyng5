@@ -33,6 +33,9 @@ public class Trigger implements TenantAwareModel {
 	@NotNull private EventType eventType;
 	@NotBlank @Size(max = 255) private String name;
 	@Builder.Default @NotNull private Boolean enabled = Boolean.TRUE;
+	private final Set<@NotBlank String> actionIds = new HashSet<>();
 	private final Set<@NotBlank String> thingGroupIds = new HashSet<>();
+	@Builder.Default @NotNull private Boolean includeEvents = Boolean.FALSE;
+	@Builder.Default @NotNull private Boolean includeAggregations = Boolean.TRUE;
 
 }

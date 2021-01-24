@@ -26,9 +26,12 @@ public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue
 			.tenantId(map.getS("tenantId"))
 			.enabled(map.getBool("enabled"))
 			.window(windowMapper.map(map.getM("window")))
+			.includeEvents(map.getBool("includeEvents"))
+			.includeAggregations(map.getBool("includeAggregations"))
 			.language(map.getEnum("language", Language.class))
 			.eventType(map.getEnum("eventType", EventType.class))
 			.build();
+		trigger.getActionIds().addAll(map.getSs("actionIds"));
 		trigger.getThingGroupIds().addAll(map.getSs("thingGroupIds"));
 		return trigger;
 	}
@@ -44,6 +47,9 @@ public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue
 				.put("window", windowMapper.unmap(item.getWindow()))
 				.put("language", item.getLanguage())
 				.put("eventType", item.getEventType())
-				.put("thingGroupIds", item.getThingGroupIds());
+				.put("actionIds", item.getActionIds())
+				.put("thingGroupIds", item.getThingGroupIds())
+				.put("includeEvents", item.getIncludeEvents())
+				.put("includeAggregations", item.getIncludeAggregations());
 	}
 }
