@@ -64,6 +64,12 @@ public class CacheMappingRepository implements MappingRepository {
 		loadIfEmpty();
 		return Collections.unmodifiableList(new ArrayList<>(cache.values()));
 	}
+	
+	@Override
+	public Mapping findById(String id) {
+		loadIfEmpty();
+		return cache.get(id);
+	}
 
 	@Override
 	public CompletableFuture<Mapping> save(Mapping mapping) {

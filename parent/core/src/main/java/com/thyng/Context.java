@@ -19,6 +19,8 @@ import com.thyng.repository.Repository;
 import com.thyng.repository.TenantAwareRepository;
 import com.thyng.service.EventService;
 import com.thyng.service.MetricService;
+import com.thyng.service.ThingGroupMappingService;
+import com.thyng.service.UserGroupMappingService;
 
 import lombok.Data;
 
@@ -42,6 +44,8 @@ public class Context implements Lifecycle {
 	
 	private EventService eventService;
 	private MetricService metricService;
+	private UserGroupMappingService userGroupMappingService;
+	private ThingGroupMappingService thingGroupMappingService;
 	
 	@Override
 	public void start() throws Exception {
@@ -62,12 +66,16 @@ public class Context implements Lifecycle {
 		
 		if(null != metricService) metricService.start();
 		if(null != eventService) eventService.start();
+		if(null != userGroupMappingService) userGroupMappingService.start();
+		if(null != thingGroupMappingService) thingGroupMappingService.start();
 	}
 	
 	@Override
 	public void stop() throws Exception {
 		if(null != eventService) eventService.stop();
 		if(null != metricService) metricService.stop();
+		if(null != userGroupMappingService) userGroupMappingService.stop();
+		if(null != thingGroupMappingService) thingGroupMappingService.stop();
 		
 		if(null != metricRepository) metricRepository.stop();
 		if(null != actionRepository) actionRepository.stop();

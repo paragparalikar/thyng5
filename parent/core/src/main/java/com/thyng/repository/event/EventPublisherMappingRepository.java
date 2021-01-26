@@ -25,6 +25,12 @@ public class EventPublisherMappingRepository implements MappingRepository {
 	public List<Mapping> findAll() {
 		return delegate.findAll();
 	}
+	
+	@Override
+	public Mapping findById(String id) {
+		return delegate.findById(id);
+	}
+	
 	@Override
 	public CompletableFuture<Mapping> save(Mapping mapping) {
 		return delegate.save(mapping)

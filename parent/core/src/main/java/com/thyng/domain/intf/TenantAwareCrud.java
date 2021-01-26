@@ -2,7 +2,7 @@ package com.thyng.domain.intf;
 
 import java.util.List;
 
-public interface TenantAwareCrud<T extends TenantAwareModel<T>> extends Lifecycle {
+public interface TenantAwareCrud<T extends TenantAwareModel<T>> extends TenantAwareSource<T>, Lifecycle {
 	
 	List<T> findAll();
 	

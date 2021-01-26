@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
@@ -51,6 +53,15 @@ public class DynamoMappingRepository implements MappingRepository {
 				&& null != lastEvaluatedKey
 				&& !lastEvaluatedKey.isEmpty());
 		return mappings;
+	}
+	
+	@Override
+	public Mapping findById(String id) {
+		final GetItemResponse response = client.getItem(GetItemRequest.builder()
+				.tableName(tableName)
+				.key(Collections.singletonMap("id", AttributeValue.builder().s(id).build()))
+				.build()).join();
+		return mapper.map(response.item());
 	}
 	
 	@Override
