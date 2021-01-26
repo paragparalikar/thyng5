@@ -21,6 +21,9 @@ public class ActuatorMapper implements Mapper<Actuator, String> {
 	public Actuator map(String text) {
 		if(Strings.isBlank(text)) return null;
 		final String[] tokens = text.split(delimiter);
-		return new Actuator(tokens[0], tokens[1]);
+		return Actuator.builder()
+				.id(tokens[0])
+				.name(tokens[1])
+				.build();
 	}
 }

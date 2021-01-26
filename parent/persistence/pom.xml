@@ -10,5 +10,6 @@
   <modules>
   	<module>repository-dynamo</module>
   	<module>repository-map</module>
+  	<module>repository-timestream</module>
   </modules>
 </project>

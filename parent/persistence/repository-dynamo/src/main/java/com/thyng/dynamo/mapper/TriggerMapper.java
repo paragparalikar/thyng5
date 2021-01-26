@@ -1,6 +1,8 @@
 package com.thyng.dynamo.mapper;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.thyng.domain.enumeration.EventType;
@@ -30,9 +32,9 @@ public class TriggerMapper implements Mapper<Trigger, Map<String, AttributeValue
 			.includeAggregations(map.getBool("includeAggregations"))
 			.language(map.getEnum("language", Language.class))
 			.eventType(map.getEnum("eventType", EventType.class))
+			.actionIds(Collections.unmodifiableSet(new HashSet<>(map.getSs("actionIds"))))
+			.thingGroupIds(Collections.unmodifiableSet(new HashSet<>(map.getSs("thingGroupIds"))))
 			.build();
-		trigger.getActionIds().addAll(map.getSs("actionIds"));
-		trigger.getThingGroupIds().addAll(map.getSs("thingGroupIds"));
 		return trigger;
 	}
 	

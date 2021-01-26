@@ -16,7 +16,7 @@ import spark.Request;
 import spark.Spark;
 
 @RequiredArgsConstructor
-public class Controller<T extends Identifiable<String> & Nameable> implements Lifecycle {
+public class Controller<T extends Identifiable<T, String> & Nameable> implements Lifecycle {
 
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;

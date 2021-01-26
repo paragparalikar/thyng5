@@ -15,7 +15,11 @@ public class AttributeMapper implements Mapper<Attribute, String> {
 	public Attribute map(String text) {
 		if(Strings.isBlank(text)) return null;
 		final String[] tokens = text.split(delimiter);
-		return new Attribute(tokens[0], tokens[1], tokens[2]);
+		return Attribute.builder()
+				.id(tokens[0])
+				.name(tokens[1])
+				.value(tokens[2])
+				.build();
 	}
 
 	@Override

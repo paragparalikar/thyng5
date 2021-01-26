@@ -3,7 +3,7 @@ package com.thyng.domain.intf;
 import java.util.List;
 import java.util.Map;
 
-public interface TenantAwareCrud<T extends TenantAwareModel, ID> {
+public interface TenantAwareCrud<T extends TenantAwareModel<T>, ID> {
 	
 	Map<ID, T> findAll();
 	

@@ -16,7 +16,7 @@ import com.thyng.util.Strings;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -27,11 +27,11 @@ import software.amazon.awssdk.services.dynamodb.model.Select;
 
 @Slf4j
 @RequiredArgsConstructor
-public class DynamoRepository<T extends Identifiable<String> & Nameable> implements Repository<T, String> {
+public class DynamoRepository<T extends Identifiable<T, String> & Nameable> implements Repository<T, String> {
 
 	@NonNull private final String tableName;
 	@NonNull private final Mapper<T, Map<String, AttributeValue>> mapper;
-	@NonNull private final DynamoDbClient client;
+	@NonNull private final DynamoDbAsyncClient client;
 	@NonNull private final CounterRepository counterRepository;
 
 	@Override
@@ -41,7 +41,7 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 				.select(Select.SPECIFIC_ATTRIBUTES)
 				.projectionExpression("id,#n")
 				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
-				.build()).items().stream()
+				.build()).join().items().stream()
 				.map(mapper::map)
 				.collect(Collectors.toList());
 	}
@@ -52,7 +52,7 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 
 	@Override
 	public T save(T entity) {
-		if(Strings.isBlank(entity.getId())) entity.setId(nextId());
+		if(Strings.isBlank(entity.getId())) entity = entity.withId(nextId());
 		client.putItem(PutItemRequest.builder()
 				.tableName(tableName)
 				.item(mapper.unmap(entity))
@@ -67,7 +67,7 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 				client.getItem(GetItemRequest.builder()
 				.tableName(tableName)
 				.key(keyAttributes(id))
-				.build()).item());
+				.build()).join().item());
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 				.tableName(tableName)
 				.returnValues(ReturnValue.ALL_OLD)
 				.key(keyAttributes(id))
-				.build()).attributes());
+				.build()).join().attributes());
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class DynamoRepository<T extends Identifiable<String> & Nameable> impleme
 				.filterExpression("id != :id AND name = :name")
 				.expressionAttributeValues(expressionAttributeValues)
 				.build();
-		return 0 < client.scan(request).count();
+		return 0 < client.scan(request).join().count();
 	}
 	
 	protected Map<String, AttributeValue> keyAttributes(String id){

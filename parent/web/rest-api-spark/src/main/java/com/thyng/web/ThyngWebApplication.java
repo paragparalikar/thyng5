@@ -21,6 +21,7 @@ import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.User;
 import com.thyng.domain.model.UserGroup;
+import com.thyng.service.LocalEventService;
 import com.thyng.util.Names;
 
 import spark.Filter;
@@ -84,6 +85,8 @@ public class ThyngWebApplication {
 		objectMapper.setSerializationInclusion(Include.NON_EMPTY);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		 
+		context.setEventService(new LocalEventService());
+		
 		start(context, modules);
 		stopOnShutdown(context, modules);
 
@@ -98,8 +101,7 @@ public class ThyngWebApplication {
 				new TenantAwareController<Trigger>("/" + Names.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()),
 				new TenantAwareController<Action>("/" + Names.ACTION, Action.class, objectMapper, context.getActionRepository()),
 				new TenantAwareController<User>("/" + Names.USER, User.class, objectMapper, context.getUserRepository()),
-				new TenantAwareController<UserGroup>("/" + Names.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()),
-				new MetricController("/" + Names.METRIC, objectMapper, context.getCacheService(), context.getMetricService()));
+				new TenantAwareController<UserGroup>("/" + Names.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()));
 		for(Lifecycle controller : controllers) controller.start();
 	}
 	

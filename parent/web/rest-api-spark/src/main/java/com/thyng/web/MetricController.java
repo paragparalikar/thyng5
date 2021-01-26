@@ -5,14 +5,15 @@ import org.eclipse.jetty.http.HttpStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Callback;
+import com.thyng.domain.dto.MetricDto;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.model.Metric;
 import com.thyng.domain.model.Sensor;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Thing;
-import com.thyng.domain.model.dto.MetricDto;
 import com.thyng.service.CacheService;
 import com.thyng.service.MetricService;
+import com.thyng.util.Names;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,8 @@ public class MetricController implements Lifecycle {
 			return null;
 		}
 		
-		final Thing thing = cacheService.thing(dto.getThingId());
-		final Template template = cacheService.template(thing.getTemplateId());
+		final Thing thing = cacheService.findById(dto.getThingId(), Names.THING);
+		final Template template = cacheService.findById(thing.getTemplateId(), Names.TEMPALTE);
 		final Metric metric = Metric.builder()
 				.metricDto(dto)
 				.thing(thing)

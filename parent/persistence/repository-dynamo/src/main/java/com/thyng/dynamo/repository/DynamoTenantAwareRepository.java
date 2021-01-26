@@ -15,7 +15,7 @@ import com.thyng.util.Strings;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -27,11 +27,11 @@ import software.amazon.awssdk.services.dynamodb.model.Select;
 
 @Slf4j
 @RequiredArgsConstructor
-public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements TenantAwareRepository<T> {
+public class DynamoTenantAwareRepository<T extends TenantAwareModel<T>> implements TenantAwareRepository<T> {
 
 	@NonNull private final String tableName;
 	@NonNull private final Mapper<T, Map<String, AttributeValue>> mapper;
-	@NonNull private final DynamoDbClient client;
+	@NonNull private final DynamoDbAsyncClient client;
 	@NonNull private final CounterRepository counterRepository;
 
 	@Override
@@ -43,7 +43,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 			response = client.scan(ScanRequest.builder()
 					.tableName(tableName)
 					.select(Select.ALL_ATTRIBUTES)
-					.build());
+					.build()).join();
 			response.items().stream()
 					.map(mapper::map)
 					.forEach(item -> items.put(item.getId(), item));
@@ -64,7 +64,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				.projectionExpression("id,#n")
 				.expressionAttributeNames(Collections.singletonMap("#n", "name"))
 				.expressionAttributeValues(Collections.singletonMap(":tenantId", AttributeValue.builder().s(tenantId).build()))
-				.build()).items().stream()
+				.build()).join().items().stream()
 				.map(mapper::map)
 				.collect(Collectors.toList());
 	}
@@ -75,7 +75,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 	
 	@Override
 	public T save(T entity) {
-		if(Strings.isBlank(entity.getId())) entity.setId(nextId());
+		if(Strings.isBlank(entity.getId())) entity = entity.withId(nextId());
 		client.putItem(PutItemRequest.builder()
 				.tableName(tableName)
 				.item(mapper.unmap(entity))
@@ -97,7 +97,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				client.getItem(GetItemRequest.builder()
 				.tableName(tableName)
 				.key(keyAttributes(id, tenantId))
-				.build()).item());
+				.build()).join().item());
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				client.deleteItem(DeleteItemRequest.builder()
 				.tableName(tableName)
 				.key(keyAttributes(id, tenantId))
-				.build()).attributes());
+				.build()).join().attributes());
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel> implements 
 				.filterExpression("name = :name")
 				.expressionAttributeValues(expressionAttributeValues)
 				.build();
-		return 0 < client.query(request).count();
+		return 0 < client.query(request).join().count();
 	}
 
 }

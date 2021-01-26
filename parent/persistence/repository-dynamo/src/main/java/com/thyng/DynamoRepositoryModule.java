@@ -11,20 +11,24 @@ import com.thyng.dynamo.mapper.ActionMapper;
 import com.thyng.dynamo.mapper.ActuatorMapper;
 import com.thyng.dynamo.mapper.AttributeMapper;
 import com.thyng.dynamo.mapper.GatewayMapper;
+import com.thyng.dynamo.mapper.MappingMapper;
 import com.thyng.dynamo.mapper.SensorMapper;
 import com.thyng.dynamo.mapper.TemplateMapper;
 import com.thyng.dynamo.mapper.TenantMapper;
 import com.thyng.dynamo.mapper.ThingGroupMapper;
 import com.thyng.dynamo.mapper.ThingMapper;
+import com.thyng.dynamo.mapper.TriggerInfoMapper;
 import com.thyng.dynamo.mapper.TriggerMapper;
 import com.thyng.dynamo.mapper.UserGroupMapper;
 import com.thyng.dynamo.mapper.UserMapper;
 import com.thyng.dynamo.mapper.WindowMapper;
 import com.thyng.dynamo.repository.DynamoActionRepository;
 import com.thyng.dynamo.repository.DynamoCounterRepository;
+import com.thyng.dynamo.repository.DynamoMappingRepository;
 import com.thyng.dynamo.repository.DynamoRepository;
 import com.thyng.dynamo.repository.DynamoTemplateRepository;
 import com.thyng.dynamo.repository.DynamoTenantAwareRepository;
+import com.thyng.dynamo.repository.DynamoTriggerInfoRepository;
 import com.thyng.repository.CounterRepository;
 import com.thyng.util.Names;
 
@@ -36,13 +40,14 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
 public class DynamoRepositoryModule implements Module {
 	
 	@Getter private final int order = 0;
 	@NonNull @Setter private Context context;
-	@NonNull private DynamoDbClient client;
+	
+	private DynamoDbAsyncClient client;
 
 	@Override
 	public void start() throws Exception {
@@ -52,9 +57,14 @@ public class DynamoRepositoryModule implements Module {
 	}
 	
 	private void createTablesIfNotExist() {
-		final List<String> tables = client.listTables().tableNames();
-		if(!tables.contains(Names.COUNTER)) new CreateTableCommand(Names.COUNTER).execute(client);
-		if(!tables.contains(Names.TENANT)) new CreateTableCommand(Names.TENANT).execute(client);
+		final List<String> tables = client.listTables().join().tableNames();
+		
+		Stream.of(Names.COUNTER, Names.TENANT, Names.THING_GROUP_MAPPING, Names.USER_GROUP_MAPPING,
+				Names.TRIGGER_INFO)
+			.filter(tableName -> !tables.contains(tableName))
+			.map(CreateTableCommand::new)
+			.forEach(command -> command.execute(client));
+		
 		Stream.of(Names.ACTUATOR, Names.GATEWAY, Names.SENSOR, Names.TEMPALTE, 
 				Names.THING, Names.THING_GROUP, Names.TRIGGER, Names.ACTION, Names.USER, Names.USER_GROUP)
 			.filter(tableName -> !tables.contains(tableName))
@@ -65,6 +75,7 @@ public class DynamoRepositoryModule implements Module {
 	private void createRepositories() {
 		final String delimiter = ",";
 		final WindowMapper windowMapper = new WindowMapper();
+		final MappingMapper mappingMapper = new MappingMapper();
 		final SensorMapper sensorMapper = new SensorMapper(delimiter);
 		final ActuatorMapper actuatorMapper = new ActuatorMapper(delimiter);
 		final AttributeMapper attributeMapper = new AttributeMapper(delimiter);
@@ -76,14 +87,17 @@ public class DynamoRepositoryModule implements Module {
 		context.setTemplateRepository(new DynamoTemplateRepository(templateMapper, client, counterRepository));
 		context.setThingRepository(new DynamoTenantAwareRepository<>(Names.THING, new ThingMapper(attributeMapper), client, counterRepository));
 		context.setThingGroupRepository(new DynamoTenantAwareRepository<>(Names.THING_GROUP, new ThingGroupMapper(), client, counterRepository));
+		context.setThingGroupMappingRepository(new DynamoMappingRepository(Names.THING_GROUP_MAPPING, client, mappingMapper));
 		context.setTriggerRepository(new DynamoTenantAwareRepository<>(Names.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
+		context.setTriggerInfoRepository(new DynamoTriggerInfoRepository(Names.TRIGGER_INFO, client, new TriggerInfoMapper()));
 		context.setActionRepository(new DynamoActionRepository(Names.ACTION, new ActionMapper(), client, counterRepository));
 		context.setUserRepository(new DynamoTenantAwareRepository<>(Names.USER, new UserMapper(attributeMapper), client, counterRepository));
 		context.setUserGroupRepository(new DynamoTenantAwareRepository<>(Names.USER_GROUP, new UserGroupMapper(), client, counterRepository));
+		context.setUserGroupMappingRepository(new DynamoMappingRepository(Names.USER_GROUP_MAPPING, client, mappingMapper));
 	}
 	
-	private DynamoDbClient client() {
-		return DynamoDbClient.builder()
+	private DynamoDbAsyncClient client() {
+		return DynamoDbAsyncClient.builder()
 				.region(Region.AP_SOUTH_1)
 				.credentialsProvider(credentialsProvider())
 				.endpointOverride(URI.create("http://localhost:8000"))

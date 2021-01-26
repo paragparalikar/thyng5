@@ -9,12 +9,14 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<netty.version>4.1.56.Final</netty.version>
+		<logback.version>1.2.3</logback.version>
+		<lombok.version>1.18.16</lombok.version>
 		<awssdk.version>2.15.61</awssdk.version>
-		<hazelcast-jet.version>4.2</hazelcast-jet.version>
-		<bouncy-castle.version>1.67</bouncy-castle.version>
-		<spring-boot.version>2.3.5.RELEASE</spring-boot.version>
-		<spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+		<eventbus.version>3.2.0</eventbus.version>
+		<jackson.version>2.12.1</jackson.version>
+		<commons-logging.version>1.2</commons-logging.version>
+		<jcl-over-sl4j.version>1.7.30</jcl-over-sl4j.version>
+		<validation-api.version>2.0.1.Final</validation-api.version>
 		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,25 +26,34 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring-boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-bom</artifactId>
-				<version>${netty.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${jcl-over-sl4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>${commons-logging.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${validation-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
@@ -52,14 +63,9 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.hazelcast.jet</groupId>
-				<artifactId>hazelcast-jet</artifactId>
-				<version>${hazelcast-jet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>${bouncy-castle.version}</version>
+				<groupId>org.greenrobot</groupId>
+				<artifactId>eventbus</artifactId>
+				<version>${eventbus.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -84,5 +90,6 @@
 		<module>core</module>
 		<module>web</module>
 		<module>persistence</module>
+		<module>evaluation</module>
 	</modules>
 </project>

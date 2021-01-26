@@ -1,5 +1,6 @@
 package com.thyng.dynamo.mapper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +38,10 @@ public class TemplateMapper implements Mapper<Template, Map<String, AttributeVal
 			.name(map.getS("name"))
 			.tenantId(map.getS("tenantId"))
 			.inactivityPeriod(map.getLong("inactivityPeriod"))
+			.sensors(Collections.unmodifiableSet(sensorMapper.map(map.getSs("sensors"))))
+			.actuators(Collections.unmodifiableSet(actuatorMapper.map(map.getSs("actuators"))))
+			.attributes(Collections.unmodifiableSet(attributesMapper.map(map.getSs("attributes"))))
 			.build();
-		template.getSensors().addAll(sensorMapper.map(map.getSs("sensors")));
-		template.getActuators().addAll(actuatorMapper.map(map.getSs("actuators")));
-		template.getAttributes().addAll(attributesMapper.map(map.getSs("attributes")));
 		return template;
 	}
 }

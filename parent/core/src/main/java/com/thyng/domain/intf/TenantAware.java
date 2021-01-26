@@ -1,9 +1,9 @@
 package com.thyng.domain.intf;
 
-public interface TenantAware {
+public interface TenantAware<T extends TenantAware<T>> {
 
 	String getTenantId();
 	
-	void setTenantId(String tenantId);
+	T withTenantId(String tenantId);
 	
 }

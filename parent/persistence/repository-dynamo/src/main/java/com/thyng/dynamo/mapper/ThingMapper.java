@@ -1,5 +1,6 @@
 package com.thyng.dynamo.mapper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +36,8 @@ public class ThingMapper implements Mapper<Thing, Map<String, AttributeValue>> {
 				.tenantId(map.getS("tenantId"))
 				.templateId(map.getS("templateId"))
 				.inactivityPeriod(map.getLong("inactivityPeriod"))
+				.attributes(Collections.unmodifiableSet(attributesMapper.map(map.getSs("attributes"))))
 				.build();
-		thing.getAttributes().addAll(attributesMapper.map(map.getSs("attributes")));
 		return thing;
 	}
 

@@ -2,7 +2,7 @@ package com.thyng.domain.intf;
 
 import java.util.List;
 
-public interface Crud<T extends Identifiable<ID> & Nameable, ID> {
+public interface Crud<T extends Identifiable<T, ID> & Nameable, ID> {
 	
 	List<T> findAll();
 	

@@ -8,7 +8,7 @@ import com.thyng.util.Names;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 @RequiredArgsConstructor
 public class DynamoCounterRepository implements CounterRepository {
 
-	@NonNull private final DynamoDbClient client;
+	@NonNull private final DynamoDbAsyncClient client;
 	private final CounterMapper counterMapper = new CounterMapper();
 	
 	@Override
@@ -29,7 +29,7 @@ public class DynamoCounterRepository implements CounterRepository {
 				.tableName(Names.COUNTER)
 				.key(Collections.singletonMap("id", AttributeValue.builder().s(name).build()))
 				.build();
-		final GetItemResponse getItemResponse = client.getItem(getItemRequest);
+		final GetItemResponse getItemResponse = client.getItem(getItemRequest).join();
 		return counterMapper.map(getItemResponse.item());
 	}
 
@@ -42,7 +42,7 @@ public class DynamoCounterRepository implements CounterRepository {
 			.updateExpression("ADD val :val")
 			.expressionAttributeValues(Collections.singletonMap(":val", AttributeValue.builder().n(delta.toString()).build()))
 			.build();
-		final UpdateItemResponse updateItemResponse = client.updateItem(updateItemRequest);
+		final UpdateItemResponse updateItemResponse = client.updateItem(updateItemRequest).join();
 		return counterMapper.map(updateItemResponse.attributes());
 	}
 

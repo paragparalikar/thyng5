@@ -15,7 +15,7 @@ import spark.Request;
 import spark.Spark;
 
 @RequiredArgsConstructor
-public class TenantAwareController<T extends TenantAwareModel> implements Lifecycle {
+public class TenantAwareController<T extends TenantAwareModel<T>> implements Lifecycle {
 
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;
@@ -43,8 +43,7 @@ public class TenantAwareController<T extends TenantAwareModel> implements Lifecy
 	private T transform(Request request) {
 		try {
 			final T entity = objectMapper.readValue(request.body(), type);
-			entity.setTenantId(tenantId(request));
-			return entity;
+			return entity.withTenantId(tenantId(request));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			Spark.halt(HttpStatus.BAD_REQUEST_400, Throwables.stackTrace(e));

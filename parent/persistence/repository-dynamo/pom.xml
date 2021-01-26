@@ -22,12 +22,6 @@
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>software.amazon.awssdk</groupId>
-					<artifactId>netty-nio-client</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 

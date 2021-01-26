@@ -2,10 +2,6 @@ package com.thyng.domain.model;
 
 import java.time.Duration;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -15,12 +11,14 @@ import com.thyng.domain.intf.TenantAwareModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.With;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
+@With
+@Jacksonized
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME, 
@@ -30,14 +28,14 @@ import lombok.experimental.SuperBuilder;
 @JsonSubTypes({ 
   @Type(value = MailAction.class, name = "MAIL")
 })
-public class Action implements TenantAwareModel {
+public class Action implements TenantAwareModel<Action> {
 	private static final long serialVersionUID = 1L;
 
-	private String id;
-	@NotBlank private String tenantId;
-	@NotNull private Boolean enabled;
-	@NotNull private ActionType actionType;
-	@NotBlank @Size(max = 255) private String name;
-	@Builder.Default @NotNull private Long rateLimit = Duration.ofHours(1).getSeconds();
+	private final String id;
+	private final String tenantId;
+	private final Boolean enabled;
+	private final ActionType actionType;
+	private final String name;
+	@Builder.Default private final Long rateLimit = Duration.ofHours(1).getSeconds();
 
 }

@@ -2,12 +2,10 @@ package com.thyng.dynamo.command;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.BiConsumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
@@ -60,16 +58,9 @@ public class CreateTableCommand {
 				.build();
 	}
 	
-	public CreateTableResponse execute(DynamoDbClient client) {
+	public CreateTableResponse execute(DynamoDbAsyncClient client) {
 		log.info("Creting table {}", tableName);
-		return client.createTable(createTableRequest());
-	}
-	
-	public void execute(DynamoDbAsyncClient client, BiConsumer<CreateTableResponse, Throwable> callback) {
-		log.info("Creting table {}", tableName);
-		client.createTable(createTableRequest()).whenComplete((response, exception) -> {
-			callback.accept(response, exception);
-		});
+		return client.createTable(createTableRequest()).join();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.thyng.dynamo.mapper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +27,8 @@ public class UserMapper implements Mapper<User, Map<String, AttributeValue>>{
 				.lastName(map.getS("lastName"))
 				.email(map.getS("email"))
 				.phone(map.getS("phone"))
+				.attributes(Collections.unmodifiableSet(attributesMapper.map(map.getSs("attributes"))))
 				.build();
-		user.getAttributes().addAll(attributesMapper.map(map.getSs("attributes")));
 		return user;
 	}
 

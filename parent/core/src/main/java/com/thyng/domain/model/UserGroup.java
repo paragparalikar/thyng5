@@ -1,27 +1,24 @@
 package com.thyng.domain.model;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import com.thyng.domain.enumeration.Language;
 import com.thyng.domain.intf.TenantAwareModel;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
+import lombok.extern.jackson.Jacksonized;
 
-@Data
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserGroup implements TenantAwareModel {
+@With
+@Value
+@Builder
+@Jacksonized
+public class UserGroup implements TenantAwareModel<UserGroup> {
 	private static final long serialVersionUID = 4533362266165981673L;
 
-	private String id;
-	@NotBlank private String name;
-	@NotBlank private String script;
-	@NotBlank private String tenantId;
-	@NotNull private Language language;
+	private final String id;
+	private final String name;
+	private final String script;
+	private final String tenantId;
+	private final Language language;
 
 }

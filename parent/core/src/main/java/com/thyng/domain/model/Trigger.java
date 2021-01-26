@@ -1,41 +1,35 @@
 package com.thyng.domain.model;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.thyng.domain.enumeration.EventType;
 import com.thyng.domain.enumeration.Language;
 import com.thyng.domain.intf.TenantAwareModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.Value;
+import lombok.With;
+import lombok.extern.jackson.Jacksonized;
 
-@Data
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Trigger implements TenantAwareModel {
+@With
+@Value
+@Builder
+@Jacksonized
+public class Trigger implements TenantAwareModel<Trigger> {
 	private static final long serialVersionUID = 1L;
 
-	private String id;
-	@Valid private Window window;
-	@NotBlank private String script;
-	@NotBlank private String tenantId;
-	@NotNull private Language language;
-	@NotNull private EventType eventType;
-	@NotBlank @Size(max = 255) private String name;
-	@Builder.Default @NotNull private Boolean enabled = Boolean.TRUE;
-	private final Set<@NotBlank String> actionIds = new HashSet<>();
-	private final Set<@NotBlank String> thingGroupIds = new HashSet<>();
-	@Builder.Default @NotNull private Boolean includeEvents = Boolean.FALSE;
-	@Builder.Default @NotNull private Boolean includeAggregations = Boolean.TRUE;
+	private final String id;
+	private final Window window;
+	private final String script;
+	private final String tenantId;
+	private final Language language;
+	private final EventType eventType;
+	private final String name;
+	@Builder.Default private final Boolean enabled = Boolean.TRUE;
+	@Builder.Default private final Set<String> actionIds = Collections.emptySet();
+	@Builder.Default private final Set<String> thingGroupIds = Collections.emptySet();
+	@Builder.Default private final Boolean includeEvents = Boolean.FALSE;
+	@Builder.Default private final Boolean includeAggregations = Boolean.TRUE;
 
 }

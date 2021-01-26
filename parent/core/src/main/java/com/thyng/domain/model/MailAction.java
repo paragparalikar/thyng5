@@ -1,41 +1,30 @@
 package com.thyng.domain.model;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
-
-import javax.validation.constraints.NotBlank;
 
 import com.thyng.domain.enumeration.ActionType;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-@Data
+@Value
+@Jacksonized
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class MailAction extends Action {
 	private static final long serialVersionUID = 1L;
 
-	@NotBlank private String subject;
-	@NotBlank private String content;
-	private final Set<@NotBlank String> userGroupIds = new HashSet<>();
+	private final String subject;
+	private final String content;
+	@Builder.Default private final Set<String> userGroupIds = Collections.emptySet();
 	
 	@Override
 	public ActionType getActionType() {
 		return ActionType.MAIL;
-	}
-	
-	@Override
-	public void setActionType(ActionType actionType) {
-		if(!ActionType.MAIL.equals(actionType)) {
-			throw new IllegalArgumentException();
-		}
-		super.setActionType(ActionType.MAIL);
 	}
 
 }
