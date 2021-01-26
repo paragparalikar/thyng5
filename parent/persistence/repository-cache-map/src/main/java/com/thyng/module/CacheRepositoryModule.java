@@ -52,9 +52,7 @@ public class CacheRepositoryModule implements Module {
 			context.setTenantRepository(CacheNameableRepository.<Tenant>nameableRepositoryBuilder()
 					.delegate(tenantRepository)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.TENANT_CREATED)
-					.updatedTopic(Constant.TENANT_UPDATED)
-					.deletedTopic(Constant.TENANT_DELETED)
+					.entityName(Constant.TENANT)
 					.build());
 		}
 	}
@@ -65,9 +63,7 @@ public class CacheRepositoryModule implements Module {
 			context.setGatewayRepository(CacheTenantAwareRepository.<Gateway>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.GATEWAY_CREATED)
-					.updatedTopic(Constant.GATEWAY_UPDATED)
-					.deletedTopic(Constant.GATEWAY_DELETED)
+					.entityName(Constant.GATEWAY)
 					.build());
 		}
 	}
@@ -78,9 +74,7 @@ public class CacheRepositoryModule implements Module {
 			context.setTemplateRepository(CacheTenantAwareRepository.<Template>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.TEMPLATE_CREATED)
-					.updatedTopic(Constant.TEMPLATE_UPDATED)
-					.deletedTopic(Constant.TEMPLATE_DELETED)
+					.entityName(Constant.TEMPALTE)
 					.build());
 		}
 	}
@@ -91,9 +85,7 @@ public class CacheRepositoryModule implements Module {
 			context.setThingRepository(CacheTenantAwareRepository.<Thing>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.THING_CREATED)
-					.updatedTopic(Constant.THING_UPDATED)
-					.deletedTopic(Constant.THING_DELETED)
+					.entityName(Constant.THING)
 					.build());
 		}
 	}
@@ -104,9 +96,7 @@ public class CacheRepositoryModule implements Module {
 			context.setThingGroupRepository(CacheTenantAwareRepository.<ThingGroup>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.THING_GROUP_CREATED)
-					.updatedTopic(Constant.THING_GROUP_UPDATED)
-					.deletedTopic(Constant.THING_GROUP_DELETED)
+					.entityName(Constant.THING_GROUP)
 					.build());
 		}
 	}
@@ -117,9 +107,7 @@ public class CacheRepositoryModule implements Module {
 			context.setThingGroupMappingRepository(CacheMappingRepository.builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.THING_GROUP_MAPPING_CREATED)
-					.updatedTopic(Constant.THING_GROUP_MAPPING_UPDATED)
-					.deletedTopic(Constant.THING_GROUP_MAPPING_DELETED)
+					.entityName(Constant.THING_GROUP_MAPPING)
 					.build());
 		}
 	}
@@ -130,9 +118,7 @@ public class CacheRepositoryModule implements Module {
 			context.setTriggerRepository(CacheTenantAwareRepository.<Trigger>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.TRIGGER_CREATED)
-					.updatedTopic(Constant.TRIGGER_UPDATED)
-					.deletedTopic(Constant.TRIGGER_DELETED)
+					.entityName(Constant.TRIGGER)
 					.build());
 		}
 	}
@@ -143,9 +129,7 @@ public class CacheRepositoryModule implements Module {
 			context.setTriggerInfoRepository(CacheRepository.<TriggerInfo>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.TRIGGER_INFO_CREATED)
-					.updatedTopic(Constant.TRIGGER_INFO_UPDATED)
-					.deletedTopic(Constant.TRIGGER_INFO_DELETED)
+					.entityName(Constant.TRIGGER_INFO)
 					.build());
 		}
 	}
@@ -156,9 +140,7 @@ public class CacheRepositoryModule implements Module {
 			context.setActionRepository(CacheTenantAwareRepository.<Action>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.ACTION_CREATED)
-					.updatedTopic(Constant.ACTION_UPDATED)
-					.deletedTopic(Constant.ACTION_DELETED)
+					.entityName(Constant.ACTION)
 					.build());
 		}
 	}
@@ -169,9 +151,7 @@ public class CacheRepositoryModule implements Module {
 			context.setUserRepository(CacheTenantAwareRepository.<User>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.USER_CREATED)
-					.updatedTopic(Constant.USER_UPDATED)
-					.deletedTopic(Constant.USER_DELETED)
+					.entityName(Constant.USER)
 					.build());
 		}
 	}
@@ -182,9 +162,7 @@ public class CacheRepositoryModule implements Module {
 			context.setUserGroupRepository(CacheTenantAwareRepository.<UserGroup>builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.USER_GROUP_CREATED)
-					.updatedTopic(Constant.USER_GROUP_UPDATED)
-					.deletedTopic(Constant.USER_GROUP_DELETED)
+					.entityName(Constant.USER_GROUP)
 					.build());
 		}
 	}
@@ -195,9 +173,7 @@ public class CacheRepositoryModule implements Module {
 			context.setUserGroupMappingRepository(CacheMappingRepository.builder()
 					.delegate(delegate)
 					.eventService(context.getEventService())
-					.createdTopic(Constant.USER_GROUP_MAPPING_CREATED)
-					.updatedTopic(Constant.USER_GROUP_MAPPING_UPDATED)
-					.deletedTopic(Constant.USER_GROUP_MAPPING_DELETED)
+					.entityName(Constant.USER_GROUP_MAPPING)
 					.build());
 		}
 	}

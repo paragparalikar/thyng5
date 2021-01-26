@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import com.thyng.domain.model.Mapping;
 import com.thyng.repository.MappingRepository;
 import com.thyng.service.EventService;
+import com.thyng.util.Constant;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -25,23 +26,23 @@ public class CacheMappingRepository implements MappingRepository {
 	private final Consumer<Mapping> evictCallback = this::evict;
 	private final Map<String, Mapping> cache = new ConcurrentHashMap<>();
 	
+	@NonNull private final String entityName;
 	@NonNull private final EventService eventService;
 	@NonNull private final MappingRepository delegate;
-	@NonNull private final String createdTopic, updatedTopic, deletedTopic;
 	
 	@Override
 	public void start() throws Exception {
 		delegate.start();
-		eventService.subscribe(createdTopic, cacheCallback);
-		eventService.subscribe(updatedTopic, cacheCallback);
-		eventService.subscribe(deletedTopic, evictCallback);
+		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventService.subscribe(Constant.createdTopic(entityName), evictCallback);
 	}
 	
 	@Override
 	public void stop() throws Exception {
-		eventService.unsubscribe(createdTopic, cacheCallback);
-		eventService.unsubscribe(updatedTopic, cacheCallback);
-		eventService.unsubscribe(deletedTopic, evictCallback);
+		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventService.unsubscribe(Constant.createdTopic(entityName), evictCallback);
 		delegate.stop();
 		cache.clear();
 	}
