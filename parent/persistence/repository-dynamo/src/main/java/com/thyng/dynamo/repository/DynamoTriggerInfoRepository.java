@@ -6,13 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.thyng.domain.model.TriggerInfo;
-import com.thyng.dynamo.mapper.Mapper;
-import com.thyng.repository.TriggerInfoRepository;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
@@ -20,12 +16,8 @@ import software.amazon.awssdk.services.dynamodb.model.Select;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 @Slf4j
-@RequiredArgsConstructor
-public class DynamoTriggerInfoRepository implements TriggerInfoRepository {
-
-	@NonNull private final String tableName;
-	@NonNull private final DynamoDbAsyncClient client;
-	@NonNull private final Mapper<TriggerInfo, Map<String, AttributeValue>> mapper;
+@SuperBuilder
+public class DynamoTriggerInfoRepository extends DynamoRepository<TriggerInfo> {
 	
 	@Override
 	public List<TriggerInfo> findAll() {
@@ -33,11 +25,11 @@ public class DynamoTriggerInfoRepository implements TriggerInfoRepository {
 		Map<String, AttributeValue> lastEvaluatedKey = null;
 		final List<TriggerInfo> infos = new LinkedList<>();
 		do {
-			response = client.scan(ScanRequest.builder()
-					.tableName(tableName)
+			response = getClient().scan(ScanRequest.builder()
+					.tableName(getTableName())
 					.select(Select.ALL_ATTRIBUTES)
 					.build()).join();
-			response.items().forEach(item -> infos.add(mapper.map(item)));
+			response.items().forEach(item -> infos.add(getMapper().map(item)));
 			lastEvaluatedKey = response.lastEvaluatedKey();
 		} while(null != response
 				&& response.hasLastEvaluatedKey()
@@ -47,8 +39,8 @@ public class DynamoTriggerInfoRepository implements TriggerInfoRepository {
 	}
 	
 	public void updateEvaluationInfo(String id, Long lastEvaluationTime) {
-		client.updateItem(UpdateItemRequest.builder()
-				.tableName(tableName)
+		getClient().updateItem(UpdateItemRequest.builder()
+				.tableName(getTableName())
 				.key(Collections.singletonMap("id", AttributeValue.builder().s(id).build()))
 				.updateExpression("SET lastEvaluationTime = :lastEvaluationTime, ADD totalEvaluationCount 1")
 				.expressionAttributeValues(Collections.singletonMap(":lastEvaluationTime", AttributeValue.builder()
@@ -59,25 +51,14 @@ public class DynamoTriggerInfoRepository implements TriggerInfoRepository {
 	}
 	
 	public void updateMatchInfo(String id, Long lastMatchTime) {
-		client.updateItem(UpdateItemRequest.builder()
-				.tableName(tableName)
+		getClient().updateItem(UpdateItemRequest.builder()
+				.tableName(getTableName())
 				.key(Collections.singletonMap("id", AttributeValue.builder().s(id).build()))
 				.updateExpression("SET lastMatchTime = :lastMatchTime, ADD totalMatchCount 1")
 				.expressionAttributeValues(Collections.singletonMap(":lastMatchTime", AttributeValue.builder()
 						.n(lastMatchTime.toString()).build()))
 				.build()).whenComplete((response, throwable) -> {
 					if(null != throwable) log.error("Failed to update match info for trigger " + id, throwable);
-				});
-	}
-
-	@Override
-	public void save(TriggerInfo triggerInfo) {
-		client.updateItem(UpdateItemRequest.builder()
-				.tableName(tableName)
-				.key(Collections.singletonMap("id", AttributeValue.builder().s(triggerInfo.getId()).build()))
-				.updateExpression("SET ")
-				.build()).whenComplete((response, throwable) -> {
-					if(null != throwable) log.error("Failed to save trigger info for " + triggerInfo.getId(), throwable);
 				});
 	}
 

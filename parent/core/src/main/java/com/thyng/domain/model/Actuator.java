@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class Actuator implements Identifiable<Actuator, String>, Nameable, Serializable {
+public class Actuator implements Identifiable<Actuator>, Nameable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final String id;

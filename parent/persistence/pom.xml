@@ -11,5 +11,6 @@
   	<module>repository-dynamo</module>
   	<module>repository-map</module>
   	<module>repository-timestream</module>
+  	<module>repository-cache-map</module>
   </modules>
 </project>

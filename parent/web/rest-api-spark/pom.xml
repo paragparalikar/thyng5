@@ -21,6 +21,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>repository-cache-map</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>repository-map</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -4,10 +4,10 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thyng.domain.intf.Crud;
 import com.thyng.domain.intf.Identifiable;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.intf.Nameable;
+import com.thyng.domain.intf.NameableCrud;
 import com.thyng.util.Throwables;
 
 import lombok.NonNull;
@@ -16,12 +16,12 @@ import spark.Request;
 import spark.Spark;
 
 @RequiredArgsConstructor
-public class Controller<T extends Identifiable<T, String> & Nameable> implements Lifecycle {
+public class Controller<T extends Identifiable<T> & Nameable> implements Lifecycle {
 
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
-	@NonNull private final Crud<T, String> repository;
+	@NonNull private final NameableCrud<T> repository;
 
 	@Override
 	public void start() throws Exception {

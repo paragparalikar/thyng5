@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import com.thyng.Callback;
 import com.thyng.domain.model.Mapping;
 import com.thyng.dynamo.mapper.Mapper;
 import com.thyng.repository.MappingRepository;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -25,6 +26,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import software.amazon.awssdk.services.dynamodb.model.Select;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
+@Builder
 @RequiredArgsConstructor
 public class DynamoMappingRepository implements MappingRepository {
 	
@@ -52,38 +54,35 @@ public class DynamoMappingRepository implements MappingRepository {
 	}
 	
 	@Override
-	public void save(Mapping mapping, Callback<Mapping> callback) {
-		client.putItem(PutItemRequest.builder()
+	public CompletableFuture<Mapping> save(Mapping mapping) {
+		return client.putItem(PutItemRequest.builder()
 				.tableName(tableName)
 				.item(mapper.unmap(mapping))
-				.build()).whenComplete((response, throwable) -> {
-					if(null != callback) callback.call(null == response ? null : mapping, throwable);
-				});
+				.build())
+				.thenApply(response -> mapping);
 	}
 	
 	@Override
-	public void saveAll(Collection<Mapping> mappings, Callback<Collection<Mapping>> callback) {
+	public CompletableFuture<Collection<Mapping>> saveAll(Collection<Mapping> mappings) {
 		final List<WriteRequest> requests = mapper.unmap(mappings).stream()
 			.map(PutRequest.builder()::item)
 			.map(PutRequest.Builder::build)
 			.map(WriteRequest.builder()::putRequest)
 			.map(WriteRequest.Builder::build)
 			.collect(Collectors.toList());
-		client.batchWriteItem(BatchWriteItemRequest.builder()
+		return client.batchWriteItem(BatchWriteItemRequest.builder()
 				.requestItems(Collections.singletonMap(tableName, requests))
-				.build()).whenComplete((response, throwable) -> {
-					if(null != callback) callback.call(mappings, throwable);
-				});
+				.build())
+				.thenApply(response -> mappings);
 	}
 	
 	@Override
-	public void delete(String id, Callback<String> callback) {
-		client.deleteItem(DeleteItemRequest.builder()
+	public CompletableFuture<String> delete(String id) {
+		return client.deleteItem(DeleteItemRequest.builder()
 				.tableName(tableName)
 				.key(Collections.singletonMap("id", AttributeValue.builder().s(id).build()))
-				.build()).whenComplete((response, throwable) -> {
-					if(null != callback) callback.call(null == response ? null : id, throwable);
-				});
+				.build())
+				.thenApply(response -> id);
 	}
 
 }

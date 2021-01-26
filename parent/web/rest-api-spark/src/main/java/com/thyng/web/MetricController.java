@@ -7,13 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Callback;
 import com.thyng.domain.dto.MetricDto;
 import com.thyng.domain.intf.Lifecycle;
+import com.thyng.domain.intf.TenantAwareCrud;
 import com.thyng.domain.model.Metric;
 import com.thyng.domain.model.Sensor;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Thing;
-import com.thyng.service.CacheService;
 import com.thyng.service.MetricService;
-import com.thyng.util.Names;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,8 @@ public class MetricController implements Lifecycle {
 	
 	@NonNull private final String path;
 	@NonNull private final ObjectMapper objectMapper;
-	@NonNull private final CacheService cacheService;
+	@NonNull private final TenantAwareCrud<Thing> thingCrud;
+	@NonNull private final TenantAwareCrud<Template> templateCrud;
 	@NonNull private final MetricService metricService;
 	
 	@Override
@@ -43,8 +43,8 @@ public class MetricController implements Lifecycle {
 			return null;
 		}
 		
-		final Thing thing = cacheService.findById(dto.getThingId(), Names.THING);
-		final Template template = cacheService.findById(thing.getTemplateId(), Names.TEMPALTE);
+		final Thing thing = thingCrud.findById(dto.getThingId());
+		final Template template = templateCrud.findById(thing.getTemplateId());
 		final Metric metric = Metric.builder()
 				.metricDto(dto)
 				.thing(thing)

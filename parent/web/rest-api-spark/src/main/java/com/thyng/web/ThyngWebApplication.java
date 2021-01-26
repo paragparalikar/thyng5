@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thyng.Context;
 import com.thyng.domain.intf.Lifecycle;
-import com.thyng.domain.intf.Module;
 import com.thyng.domain.model.Action;
 import com.thyng.domain.model.Gateway;
 import com.thyng.domain.model.Template;
@@ -21,8 +20,9 @@ import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.User;
 import com.thyng.domain.model.UserGroup;
+import com.thyng.module.Module;
 import com.thyng.service.LocalEventService;
-import com.thyng.util.Names;
+import com.thyng.util.Constant;
 
 import spark.Filter;
 import spark.Spark;
@@ -93,15 +93,15 @@ public class ThyngWebApplication {
 		cors();
 		Spark.defaultResponseTransformer(objectMapper::writeValueAsString);
 		final List<Lifecycle> controllers = Arrays.asList(
-				new Controller<Tenant>("/" + Names.TENANT, Tenant.class, objectMapper, context.getTenantRepository()),
-				new TenantAwareController<Gateway>("/" + Names.GATEWAY, Gateway.class, objectMapper, context.getGatewayRepository()),
-				new TenantAwareController<Template>("/" + Names.TEMPALTE, Template.class, objectMapper, context.getTemplateRepository()),
-				new TenantAwareController<Thing>("/" + Names.THING, Thing.class, objectMapper, context.getThingRepository()),
-				new TenantAwareController<ThingGroup>("/" + Names.THING_GROUP, ThingGroup.class, objectMapper, context.getThingGroupRepository()),
-				new TenantAwareController<Trigger>("/" + Names.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()),
-				new TenantAwareController<Action>("/" + Names.ACTION, Action.class, objectMapper, context.getActionRepository()),
-				new TenantAwareController<User>("/" + Names.USER, User.class, objectMapper, context.getUserRepository()),
-				new TenantAwareController<UserGroup>("/" + Names.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()));
+				new Controller<Tenant>("/" + Constant.TENANT, Tenant.class, objectMapper, context.getTenantRepository()),
+				new TenantAwareController<Gateway>("/" + Constant.GATEWAY, Gateway.class, objectMapper, context.getGatewayRepository()),
+				new TenantAwareController<Template>("/" + Constant.TEMPALTE, Template.class, objectMapper, context.getTemplateRepository()),
+				new TenantAwareController<Thing>("/" + Constant.THING, Thing.class, objectMapper, context.getThingRepository()),
+				new TenantAwareController<ThingGroup>("/" + Constant.THING_GROUP, ThingGroup.class, objectMapper, context.getThingGroupRepository()),
+				new TenantAwareController<Trigger>("/" + Constant.TRIGGER, Trigger.class, objectMapper, context.getTriggerRepository()),
+				new TenantAwareController<Action>("/" + Constant.ACTION, Action.class, objectMapper, context.getActionRepository()),
+				new TenantAwareController<User>("/" + Constant.USER, User.class, objectMapper, context.getUserRepository()),
+				new TenantAwareController<UserGroup>("/" + Constant.USER_GROUP, UserGroup.class, objectMapper, context.getUserGroupRepository()));
 		for(Lifecycle controller : controllers) controller.start();
 	}
 	

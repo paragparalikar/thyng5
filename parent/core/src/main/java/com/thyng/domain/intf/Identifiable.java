@@ -1,9 +1,9 @@
 package com.thyng.domain.intf;
 
-public interface Identifiable<T extends Identifiable<T, ID>, ID> {
+public interface Identifiable<T extends Identifiable<T>> {
 
-	ID getId();
+	String getId();
 	
-	T withId(ID id);
+	T withId(String id);
 	
 }

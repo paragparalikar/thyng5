@@ -2,6 +2,7 @@ package com.thyng.dynamo.repository;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,8 +13,10 @@ import com.thyng.repository.CounterRepository;
 import com.thyng.repository.TenantAwareRepository;
 import com.thyng.util.Strings;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -26,7 +29,8 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import software.amazon.awssdk.services.dynamodb.model.Select;
 
 @Slf4j
-@RequiredArgsConstructor
+@SuperBuilder
+@Getter(AccessLevel.PROTECTED)
 public class DynamoTenantAwareRepository<T extends TenantAwareModel<T>> implements TenantAwareRepository<T> {
 
 	@NonNull private final String tableName;
@@ -35,8 +39,8 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel<T>> implemen
 	@NonNull private final CounterRepository counterRepository;
 
 	@Override
-	public Map<String, T> findAll() {
-		final Map<String, T> items = new HashMap<>();
+	public List<T> findAll() {
+		final List<T> items = new LinkedList<>();
 		ScanResponse response = null;
 		Map<String, AttributeValue> lastEvaluatedKey = null;
 		do {
@@ -46,7 +50,7 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel<T>> implemen
 					.build()).join();
 			response.items().stream()
 					.map(mapper::map)
-					.forEach(item -> items.put(item.getId(), item));
+					.forEach(items::add);
 			lastEvaluatedKey = response.lastEvaluatedKey();
 		}while(null != response 
 			&& response.hasLastEvaluatedKey()
@@ -89,6 +93,11 @@ public class DynamoTenantAwareRepository<T extends TenantAwareModel<T>> implemen
 		map.put("id", AttributeValue.builder().s(id).build());
 		map.put("tenantId", AttributeValue.builder().s(tenantId).build());
 		return map;
+	}
+	
+	@Override
+	public T findById(String id) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class Sensor implements Identifiable<Sensor, String>, Nameable, Serializable {
+public class Sensor implements Identifiable<Sensor>, Nameable, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private final String id;

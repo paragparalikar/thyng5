@@ -20,7 +20,7 @@ public class TenantAwareController<T extends TenantAwareModel<T>> implements Lif
 	@NonNull private final String path;
 	@NonNull private final Class<T> type;
 	@NonNull private final ObjectMapper objectMapper;
-	@NonNull private final TenantAwareCrud<T, String> repository;
+	@NonNull private final TenantAwareCrud<T> repository;
 
 	@Override
 	public void start() throws Exception {

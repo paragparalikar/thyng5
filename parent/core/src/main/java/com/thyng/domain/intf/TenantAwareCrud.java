@@ -1,15 +1,16 @@
 package com.thyng.domain.intf;
 
 import java.util.List;
-import java.util.Map;
 
-public interface TenantAwareCrud<T extends TenantAwareModel<T>, ID> {
+public interface TenantAwareCrud<T extends TenantAwareModel<T>> extends Lifecycle {
 	
-	Map<ID, T> findAll();
+	List<T> findAll();
 	
 	List<T> findAll(String tenantId);
 	
 	T save(T entity);
+	
+	T findById(String id);
 	
 	T findById(String tenantId, String id);
 	

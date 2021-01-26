@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class Tenant implements Identifiable<Tenant, String>, Nameable, Serializable {
+public class Tenant implements Identifiable<Tenant>, Nameable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final String id;

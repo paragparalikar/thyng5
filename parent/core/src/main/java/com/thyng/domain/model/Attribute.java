@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class Attribute implements Identifiable<Attribute, String>, Nameable, Serializable {
+public class Attribute implements Identifiable<Attribute>, Nameable, Serializable {
 	private static final long serialVersionUID = -8647679406655187521L;
 
 	private final String id;

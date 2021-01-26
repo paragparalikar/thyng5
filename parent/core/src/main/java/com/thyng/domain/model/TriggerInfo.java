@@ -11,7 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class TriggerInfo implements Identifiable<TriggerInfo, String> {
+public class TriggerInfo implements Identifiable<TriggerInfo> {
 
 	private final String id;
 	private final Long lastMatchTime;

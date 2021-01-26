@@ -15,7 +15,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class Mapping implements Serializable, Identifiable<Mapping, String> {
+public class Mapping implements Serializable, Identifiable<Mapping> {
 	private static final long serialVersionUID = 4951931148342631093L;
 	
 	private final String id;
