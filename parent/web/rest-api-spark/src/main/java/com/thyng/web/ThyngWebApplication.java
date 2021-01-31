@@ -20,8 +20,8 @@ import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.User;
 import com.thyng.domain.model.UserGroup;
+import com.thyng.event.LocalEventBus;
 import com.thyng.module.Module;
-import com.thyng.service.LocalEventService;
 import com.thyng.util.Constant;
 
 import spark.Filter;
@@ -85,7 +85,7 @@ public class ThyngWebApplication {
 		objectMapper.setSerializationInclusion(Include.NON_EMPTY);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		 
-		context.setEventService(new LocalEventService());
+		context.setEventBus(new LocalEventBus());
 		
 		start(context, modules);
 		stopOnShutdown(context, modules);

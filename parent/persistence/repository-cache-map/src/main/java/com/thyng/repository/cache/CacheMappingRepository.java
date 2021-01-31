@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import com.thyng.domain.model.Mapping;
+import com.thyng.event.EventBus;
 import com.thyng.repository.MappingRepository;
-import com.thyng.service.EventService;
 import com.thyng.util.Constant;
 
 import lombok.Builder;
@@ -27,22 +27,22 @@ public class CacheMappingRepository implements MappingRepository {
 	private final Map<String, Mapping> cache = new ConcurrentHashMap<>();
 	
 	@NonNull private final String entityName;
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventBus;
 	@NonNull private final MappingRepository delegate;
 	
 	@Override
 	public void start() throws Exception {
 		delegate.start();
-		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.createdTopic(entityName), evictCallback);
+		eventBus.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.createdTopic(entityName), evictCallback);
 	}
 	
 	@Override
 	public void stop() throws Exception {
-		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.createdTopic(entityName), evictCallback);
+		eventBus.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.createdTopic(entityName), evictCallback);
 		delegate.stop();
 		cache.clear();
 	}

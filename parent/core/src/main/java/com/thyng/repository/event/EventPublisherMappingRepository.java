@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.thyng.domain.model.Mapping;
+import com.thyng.event.EventBus;
 import com.thyng.repository.MappingRepository;
-import com.thyng.service.EventService;
 import com.thyng.util.Constant;
 
 import lombok.Builder;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class EventPublisherMappingRepository implements MappingRepository {
 
 	@NonNull private final String entityName;
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventBus;
 	@NonNull private final MappingRepository delegate;
 	
 	@Override
@@ -35,7 +35,7 @@ public class EventPublisherMappingRepository implements MappingRepository {
 	public CompletableFuture<Mapping> save(Mapping mapping) {
 		return delegate.save(mapping)
 				.thenApply(result -> {
-					eventService.publish(Constant.createdTopic(entityName), result);
+					eventBus.publish(Constant.createdTopic(entityName), result);
 					return result;
 				});
 	}
@@ -44,7 +44,7 @@ public class EventPublisherMappingRepository implements MappingRepository {
 		return delegate.saveAll(mappings)
 				.thenApply(results -> {
 					results.forEach(result -> {
-						eventService.publish(Constant.createdTopic(entityName), result);
+						eventBus.publish(Constant.createdTopic(entityName), result);
 					});
 					return results;
 				});
@@ -53,7 +53,7 @@ public class EventPublisherMappingRepository implements MappingRepository {
 	public CompletableFuture<String> delete(String id) {
 		return delegate.delete(id)
 				.thenApply(result -> {
-					eventService.publish(Constant.deletedTopic(entityName), result);
+					eventBus.publish(Constant.deletedTopic(entityName), result);
 					return result;
 				});
 	}

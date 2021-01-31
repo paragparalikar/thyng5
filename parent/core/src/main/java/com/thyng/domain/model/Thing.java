@@ -23,7 +23,5 @@ public class Thing implements TenantAwareModel<Thing> {
 	private final String templateId;
 	private final Long inactivityPeriod;
 	@Builder.Default private final Set<Attribute> attributes = Collections.emptySet();
-	
-	private final transient Template template;
 
 }

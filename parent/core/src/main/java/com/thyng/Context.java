@@ -8,19 +8,22 @@ import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.ThingGroup;
 import com.thyng.domain.model.Trigger;
+import com.thyng.domain.model.TriggerEvaluationInfo;
 import com.thyng.domain.model.TriggerInfo;
 import com.thyng.domain.model.User;
 import com.thyng.domain.model.UserGroup;
+import com.thyng.event.EventBus;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.MappingRepository;
 import com.thyng.repository.MetricRepository;
 import com.thyng.repository.NameableRepository;
+import com.thyng.repository.ObjectRepository;
 import com.thyng.repository.Repository;
 import com.thyng.repository.TenantAwareRepository;
-import com.thyng.service.EventService;
 import com.thyng.service.MetricService;
-import com.thyng.service.ThingGroupMappingService;
-import com.thyng.service.UserGroupMappingService;
+import com.thyng.service.evaluation.trigger.TriggerEvaluationEligibilityService;
+import com.thyng.service.mapping.ThingGroupMappingService;
+import com.thyng.service.mapping.UserGroupMappingService;
 
 import lombok.Data;
 
@@ -41,14 +44,18 @@ public class Context implements Lifecycle {
 	private TenantAwareRepository<User> userRepository;
 	private TenantAwareRepository<UserGroup> userGroupRepository;
 	private MappingRepository userGroupMappingRepository;
+	private ObjectRepository<TriggerEvaluationInfo> triggerEvaluationInfoRepository;
 	
-	private EventService eventService;
+	private EventBus eventBus;
 	private MetricService metricService;
 	private UserGroupMappingService userGroupMappingService;
 	private ThingGroupMappingService thingGroupMappingService;
+	private TriggerEvaluationEligibilityService triggerEvaluationEligibilityService;
 	
 	@Override
 	public void start() throws Exception {
+		if(null != eventBus) eventBus.start();
+		
 		if(null != counterRepository) counterRepository.start();
 		if(null != tenantRepository) tenantRepository.start();
 		if(null != gatewayRepository) gatewayRepository.start();
@@ -63,16 +70,17 @@ public class Context implements Lifecycle {
 		if(null != userGroupRepository) userGroupRepository.start();
 		if(null != userGroupMappingRepository) userGroupMappingRepository.start();
 		if(null != metricRepository) metricRepository.start();
+		if(null != triggerEvaluationInfoRepository) triggerEvaluationInfoRepository.start();
 		
 		if(null != metricService) metricService.start();
-		if(null != eventService) eventService.start();
 		if(null != userGroupMappingService) userGroupMappingService.start();
 		if(null != thingGroupMappingService) thingGroupMappingService.start();
+		if(null != triggerEvaluationEligibilityService) triggerEvaluationEligibilityService.start();
 	}
 	
 	@Override
 	public void stop() throws Exception {
-		if(null != eventService) eventService.stop();
+		if(null != triggerEvaluationEligibilityService) triggerEvaluationEligibilityService.stop();
 		if(null != metricService) metricService.stop();
 		if(null != userGroupMappingService) userGroupMappingService.stop();
 		if(null != thingGroupMappingService) thingGroupMappingService.stop();
@@ -91,6 +99,9 @@ public class Context implements Lifecycle {
 		if(null != userRepository) userRepository.stop();
 		if(null != tenantRepository) tenantRepository.stop();
 		if(null != counterRepository) counterRepository.stop();
+		if(null != triggerEvaluationInfoRepository) triggerEvaluationInfoRepository.stop();
+		
+		if(null != eventBus) eventBus.stop();
 	}
 
 }

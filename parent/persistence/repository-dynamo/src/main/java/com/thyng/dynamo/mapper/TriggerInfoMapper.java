@@ -15,10 +15,9 @@ public class TriggerInfoMapper implements Mapper<TriggerInfo, Map<String, Attrib
 		final AttributeMap map = new AttributeMap(attributes);
 		return TriggerInfo.builder()
 				.id(map.getS("id"))
+				.eligible(map.getBool("eligible"))
 				.lastMatchTime(map.getLong("lastMatchTime"))
 				.totalMatchCount(map.getLong("totalMatchCount"))
-				.lastEvaluationTime(map.getLong("lastEvaluationTime"))
-				.totalEvaluationCount(map.getLong("totalEvaluationCount"))
 				.build();
 	}
 
@@ -26,10 +25,9 @@ public class TriggerInfoMapper implements Mapper<TriggerInfo, Map<String, Attrib
 	public Map<String, AttributeValue> unmap(TriggerInfo entity) {
 		return null == entity ? null : new AttributeMap(new HashMap<>())
 				.put("id", entity.getId())
+				.put("eligible", entity.getEligible())
 				.put("lastMatchTime", entity.getLastMatchTime())
-				.put("totalMatchCount", entity.getTotalMatchCount())
-				.put("lastEvaluationTime", entity.getLastEvaluationTime())
-				.put("totalEvaluationCount", entity.getTotalEvaluationCount());
+				.put("totalMatchCount", entity.getTotalMatchCount());
 	}
 
 }

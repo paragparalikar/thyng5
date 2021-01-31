@@ -1,4 +1,4 @@
-package com.thyng.service;
+package com.thyng.service.evaluation;
 
 import java.util.EnumMap;
 import java.util.Map;

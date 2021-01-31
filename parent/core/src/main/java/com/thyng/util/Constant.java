@@ -20,6 +20,8 @@ public interface Constant {
 	String USER_GROUP = "user-groups";
 	String USER_GROUP_MAPPING = "user-group-mappings";
 	String METRIC = "metrics";
+	String OBJECT = "objects";
+	String TRIGGER_EVALUATION_INFO = "trigger-evaluation-info";
 	
 	String NAME_DELIMITER = "-";
 	String TOPIC_CREATED = "created";

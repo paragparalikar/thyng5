@@ -57,7 +57,7 @@ public class CoreModule implements Module {
 		if(null != tenantRepository) {
 			context.setTenantRepository(EventPublisherNameableRepository.<Tenant>nameableRepositoryBuilder()
 					.delegate(tenantRepository)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TENANT)
 					.build());
 		}
@@ -68,7 +68,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setGatewayRepository(EventPublisherTenantAwareRepository.<Gateway>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.GATEWAY)
 					.build());
 		}
@@ -79,7 +79,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setTemplateRepository(EventPublisherTenantAwareRepository.<Template>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TEMPALTE)
 					.build());
 		}
@@ -90,7 +90,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setThingRepository(EventPublisherTenantAwareRepository.<Thing>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING)
 					.build());
 		}
@@ -101,7 +101,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setThingGroupRepository(EventPublisherTenantAwareRepository.<ThingGroup>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING_GROUP)
 					.build());
 		}
@@ -112,7 +112,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setThingGroupMappingRepository(EventPublisherMappingRepository.builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING_GROUP_MAPPING)
 					.build());
 		}
@@ -123,7 +123,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setTriggerRepository(EventPublisherTenantAwareRepository.<Trigger>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TRIGGER)
 					.build());
 		}
@@ -134,7 +134,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setTriggerInfoRepository(EventPublisherRepository.<TriggerInfo>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TRIGGER_INFO)
 					.build());
 		}
@@ -145,7 +145,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setActionRepository(EventPublisherTenantAwareRepository.<Action>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.ACTION)
 					.build());
 		}
@@ -156,7 +156,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setUserRepository(EventPublisherTenantAwareRepository.<User>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER)
 					.build());
 		}
@@ -167,7 +167,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setUserGroupRepository(EventPublisherTenantAwareRepository.<UserGroup>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER_GROUP)
 					.build());
 		}
@@ -178,7 +178,7 @@ public class CoreModule implements Module {
 		if(null != delegate) {
 			context.setUserGroupMappingRepository(EventPublisherMappingRepository.builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER_GROUP_MAPPING)
 					.build());
 		}

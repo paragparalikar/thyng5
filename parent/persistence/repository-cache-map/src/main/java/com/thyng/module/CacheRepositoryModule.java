@@ -51,7 +51,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != tenantRepository) {
 			context.setTenantRepository(CacheNameableRepository.<Tenant>nameableRepositoryBuilder()
 					.delegate(tenantRepository)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TENANT)
 					.build());
 		}
@@ -62,7 +62,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setGatewayRepository(CacheTenantAwareRepository.<Gateway>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.GATEWAY)
 					.build());
 		}
@@ -73,7 +73,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setTemplateRepository(CacheTenantAwareRepository.<Template>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TEMPALTE)
 					.build());
 		}
@@ -84,7 +84,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setThingRepository(CacheTenantAwareRepository.<Thing>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING)
 					.build());
 		}
@@ -95,7 +95,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setThingGroupRepository(CacheTenantAwareRepository.<ThingGroup>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING_GROUP)
 					.build());
 		}
@@ -106,7 +106,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setThingGroupMappingRepository(CacheMappingRepository.builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.THING_GROUP_MAPPING)
 					.build());
 		}
@@ -117,7 +117,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setTriggerRepository(CacheTenantAwareRepository.<Trigger>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TRIGGER)
 					.build());
 		}
@@ -128,7 +128,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setTriggerInfoRepository(CacheRepository.<TriggerInfo>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.TRIGGER_INFO)
 					.build());
 		}
@@ -139,7 +139,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setActionRepository(CacheTenantAwareRepository.<Action>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.ACTION)
 					.build());
 		}
@@ -150,7 +150,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setUserRepository(CacheTenantAwareRepository.<User>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER)
 					.build());
 		}
@@ -161,7 +161,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setUserGroupRepository(CacheTenantAwareRepository.<UserGroup>builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER_GROUP)
 					.build());
 		}
@@ -172,7 +172,7 @@ public class CacheRepositoryModule implements Module {
 		if(null != delegate) {
 			context.setUserGroupMappingRepository(CacheMappingRepository.builder()
 					.delegate(delegate)
-					.eventService(context.getEventService())
+					.eventBus(context.getEventBus())
 					.entityName(Constant.USER_GROUP_MAPPING)
 					.build());
 		}

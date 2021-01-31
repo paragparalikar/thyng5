@@ -109,7 +109,6 @@ public class DevDataLoader implements Runnable {
 			return Thing.builder()
 					.tenantId(template.getTenantId())
 					.templateId(template.getId())
-					.template(template)
 					.name("Thing" + index)
 					.inactivityPeriod(300l + index)
 					.attributes(Collections.unmodifiableSet(attributes()))

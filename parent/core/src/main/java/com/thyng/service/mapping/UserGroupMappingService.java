@@ -1,4 +1,4 @@
-package com.thyng.service;
+package com.thyng.service.mapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,9 @@ import com.thyng.domain.intf.TenantAwareSource;
 import com.thyng.domain.model.Mapping;
 import com.thyng.domain.model.User;
 import com.thyng.domain.model.UserGroup;
+import com.thyng.event.EventBus;
 import com.thyng.repository.MappingRepository;
+import com.thyng.service.evaluation.ScriptEvaluationService;
 import com.thyng.util.Constant;
 
 import lombok.Builder;
@@ -28,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserGroupMappingService implements Lifecycle {
 
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventService;
 	@NonNull private final TenantAwareSource<User> userSource;
 	@NonNull private final TenantAwareSource<UserGroup> userGroupSource;
 	@NonNull private final MappingRepository userGroupMappingRepository;

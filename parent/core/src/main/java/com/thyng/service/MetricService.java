@@ -1,5 +1,7 @@
 package com.thyng.service;
 
+import java.util.Map;
+
 import com.thyng.Callback;
 import com.thyng.domain.intf.Lifecycle;
 import com.thyng.domain.model.Metric;
@@ -15,6 +17,10 @@ public class MetricService implements Lifecycle {
 	
 	public void create(@NonNull Metric metric, Callback<Metric> callback) {
 		metricRepository.create(metric, callback);
+	}
+	
+	public Map<String, Long> findAllLatestTimestamps(){
+		return metricRepository.findAllLatestTimestamps();
 	}
 	
 }

@@ -1,4 +1,4 @@
-package com.thyng.service;
+package com.thyng.event;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LocalEventService implements EventService {
+public class LocalEventBus implements EventBus {
 	
 	private final Map<String, List<Consumer<Object>>> subscribers = new HashMap<>();
 

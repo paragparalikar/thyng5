@@ -1,4 +1,4 @@
-package com.thyng.service;
+package com.thyng.service.mapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,9 @@ import com.thyng.domain.model.Mapping;
 import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.ThingGroup;
+import com.thyng.event.EventBus;
 import com.thyng.repository.MappingRepository;
+import com.thyng.service.evaluation.ScriptEvaluationService;
 import com.thyng.util.Constant;
 
 import lombok.Builder;
@@ -29,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ThingGroupMappingService implements Lifecycle {
 	
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventService;
 	@NonNull private final TenantAwareSource<Thing> thingSource;
 	@NonNull private final TenantAwareSource<Template> templateSource;
 	@NonNull private final TenantAwareSource<ThingGroup> thingGroupSource;

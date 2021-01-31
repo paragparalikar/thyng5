@@ -23,6 +23,7 @@ import com.thyng.dynamo.mapper.TemplateMapper;
 import com.thyng.dynamo.mapper.TenantMapper;
 import com.thyng.dynamo.mapper.ThingGroupMapper;
 import com.thyng.dynamo.mapper.ThingMapper;
+import com.thyng.dynamo.mapper.TriggerEvaluationInfoMapper;
 import com.thyng.dynamo.mapper.TriggerInfoMapper;
 import com.thyng.dynamo.mapper.TriggerMapper;
 import com.thyng.dynamo.mapper.UserGroupMapper;
@@ -31,11 +32,13 @@ import com.thyng.dynamo.mapper.WindowMapper;
 import com.thyng.dynamo.repository.DynamoCounterRepository;
 import com.thyng.dynamo.repository.DynamoMappingRepository;
 import com.thyng.dynamo.repository.DynamoNameableRepository;
+import com.thyng.dynamo.repository.DynamoObjectRepository;
 import com.thyng.dynamo.repository.DynamoRepository;
 import com.thyng.dynamo.repository.DynamoTenantAwareRepository;
 import com.thyng.repository.CounterRepository;
 import com.thyng.repository.MappingRepository;
 import com.thyng.repository.NameableRepository;
+import com.thyng.repository.ObjectRepository;
 import com.thyng.repository.Repository;
 import com.thyng.repository.TenantAwareRepository;
 import com.thyng.util.Constant;
@@ -69,7 +72,7 @@ public class DynamoRepositoryModule implements Module {
 		final List<String> tables = client.listTables().join().tableNames();
 		
 		Stream.of(Constant.COUNTER, Constant.TENANT, Constant.THING_GROUP_MAPPING, Constant.USER_GROUP_MAPPING,
-				Constant.TRIGGER_INFO)
+				Constant.TRIGGER_INFO, Constant.OBJECT)
 			.filter(tableName -> !tables.contains(tableName))
 			.map(CreateTableCommand::new)
 			.forEach(command -> command.execute(client));
@@ -104,6 +107,16 @@ public class DynamoRepositoryModule implements Module {
 		context.setUserRepository(tenantAwareRepository(Constant.USER, new UserMapper(attributeMapper), client, counterRepository));
 		context.setUserGroupRepository(tenantAwareRepository(Constant.USER_GROUP, new UserGroupMapper(), client, counterRepository));
 		context.setUserGroupMappingRepository(mappingRepository(Constant.USER_GROUP_MAPPING, client, mappingMapper));
+		context.setTriggerEvaluationInfoRepository(objectRepository(Constant.OBJECT, client, new TriggerEvaluationInfoMapper()));
+	}
+	
+	private <T extends Identifiable<T>> ObjectRepository<T> objectRepository(String tableName,
+			DynamoDbAsyncClient client, Mapper<T, Map<String, AttributeValue>> mapper){
+		return DynamoObjectRepository.<T>builder()
+				.client(client)
+				.mapper(mapper)
+				.tableName(tableName)
+				.build();
 	}
 	
 	private <T extends Identifiable<T>> Repository<T> repository(String tableName, 

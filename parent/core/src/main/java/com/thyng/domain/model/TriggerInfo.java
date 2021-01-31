@@ -16,7 +16,7 @@ public class TriggerInfo implements Identifiable<TriggerInfo> {
 	private final String id;
 	private final Long lastMatchTime;
 	private final Long totalMatchCount;
-	private final Long lastEvaluationTime;
-	private final Long totalEvaluationCount;
+	
+	@Builder.Default private final Boolean eligible = Boolean.TRUE;
 	
 }

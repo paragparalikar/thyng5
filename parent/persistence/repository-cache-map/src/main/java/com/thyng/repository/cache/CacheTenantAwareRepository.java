@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.thyng.domain.intf.TenantAwareModel;
+import com.thyng.event.EventBus;
 import com.thyng.repository.TenantAwareRepository;
-import com.thyng.service.EventService;
 import com.thyng.util.Constant;
 
 import lombok.NonNull;
@@ -30,22 +30,22 @@ public class CacheTenantAwareRepository<T extends TenantAwareModel<T>> implement
 	private final Map<String, Map<String, T>> nameCache = new ConcurrentHashMap<>();
 	
 	@NonNull private final String entityName;
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventBus;
 	@NonNull private final TenantAwareRepository<T> delegate;
 	
 	@Override
 	public void start() throws Exception {
 		delegate.start();
-		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.updatedTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.deletedTopic(entityName), evictCallback);
+		eventBus.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.updatedTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.deletedTopic(entityName), evictCallback);
 	}
 	
 	@Override
 	public void stop() throws Exception {
-		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.updatedTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.deletedTopic(entityName), evictCallback);
+		eventBus.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.updatedTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.deletedTopic(entityName), evictCallback);
 		delegate.stop();
 		cache.values().forEach(Map::clear);
 		cache.clear();

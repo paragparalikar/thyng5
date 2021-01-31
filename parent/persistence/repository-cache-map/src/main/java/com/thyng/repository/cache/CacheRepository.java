@@ -1,6 +1,7 @@
 package com.thyng.repository.cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import com.thyng.domain.intf.Identifiable;
+import com.thyng.event.EventBus;
 import com.thyng.repository.Repository;
-import com.thyng.service.EventService;
 import com.thyng.util.Constant;
 
 import lombok.NonNull;
@@ -26,14 +27,14 @@ public class CacheRepository<T extends Identifiable<T>> implements Repository<T>
 	
 	@NonNull private final String entityName;
 	@NonNull private final Repository<T> delegate;
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventBus;
 	
 	@Override
 	public void start() throws Exception {
 		delegate.start();
-		eventService.subscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.updatedTopic(entityName), cacheCallback);
-		eventService.subscribe(Constant.deletedTopic(entityName), evictCallback);
+		eventBus.subscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.updatedTopic(entityName), cacheCallback);
+		eventBus.subscribe(Constant.deletedTopic(entityName), evictCallback);
 	}
 	
 	protected void cache(T item) {
@@ -47,9 +48,9 @@ public class CacheRepository<T extends Identifiable<T>> implements Repository<T>
 	
 	@Override
 	public void stop() throws Exception {
-		eventService.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.updatedTopic(entityName), cacheCallback);
-		eventService.unsubscribe(Constant.deletedTopic(entityName), evictCallback);
+		eventBus.unsubscribe(Constant.createdTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.updatedTopic(entityName), cacheCallback);
+		eventBus.unsubscribe(Constant.deletedTopic(entityName), evictCallback);
 		delegate.stop();
 		cache.clear();
 	}
@@ -72,6 +73,13 @@ public class CacheRepository<T extends Identifiable<T>> implements Repository<T>
 	}
 
 	@Override
+	public <C extends Collection<T>> C saveAll(C entities) {
+		final C results = delegate.saveAll(entities);
+		if(null != results) results.forEach(cacheCallback);
+		return results;
+	}
+	
+	@Override
 	public T findById(String id) {
 		loadIfEmpty();
 		return cache.get(id);
@@ -82,6 +90,13 @@ public class CacheRepository<T extends Identifiable<T>> implements Repository<T>
 		final T entity = delegate.deleteById(id);
 		evictCallback.accept(entity);
 		return entity;
+	}
+	
+	@Override
+	public <C extends Collection<T>> C deleteAll(C entities) {
+		final C results = delegate.deleteAll(entities);
+		if(null != results) results.forEach(evictCallback);
+		return results;
 	}
 
 }

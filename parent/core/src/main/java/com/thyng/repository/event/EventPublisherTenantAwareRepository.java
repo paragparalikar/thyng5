@@ -3,8 +3,8 @@ package com.thyng.repository.event;
 import java.util.List;
 
 import com.thyng.domain.intf.TenantAwareModel;
+import com.thyng.event.EventBus;
 import com.thyng.repository.TenantAwareRepository;
-import com.thyng.service.EventService;
 import com.thyng.util.Constant;
 import com.thyng.util.Strings;
 
@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 public class EventPublisherTenantAwareRepository<T extends TenantAwareModel<T>> implements TenantAwareRepository<T> {
 
 	@NonNull private final String entityName;
-	@NonNull private final EventService eventService;
+	@NonNull private final EventBus eventBus;
 	@NonNull private final TenantAwareRepository<T> delegate;
 	
 	@Override
@@ -35,7 +35,7 @@ public class EventPublisherTenantAwareRepository<T extends TenantAwareModel<T>> 
 		final String topic = Strings.isBlank(entity.getId()) ? 
 				Constant.createdTopic(entityName) : Constant.updatedTopic(entityName);
 		final T result = delegate.save(entity);
-		eventService.publish(topic, result);
+		eventBus.publish(topic, result);
 		return result;
 	}
 
@@ -52,7 +52,7 @@ public class EventPublisherTenantAwareRepository<T extends TenantAwareModel<T>> 
 	@Override
 	public T deleteById(String tenantId, String id) {
 		final T result = delegate.deleteById(tenantId, id);
-		eventService.publish(Constant.deletedTopic(entityName), result);
+		eventBus.publish(Constant.deletedTopic(entityName), result);
 		return result;
 	}
 
