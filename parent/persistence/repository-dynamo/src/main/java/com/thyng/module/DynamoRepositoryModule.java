@@ -22,7 +22,10 @@ import com.thyng.dynamo.mapper.SensorMapper;
 import com.thyng.dynamo.mapper.TemplateMapper;
 import com.thyng.dynamo.mapper.TenantMapper;
 import com.thyng.dynamo.mapper.ThingGroupMapper;
+import com.thyng.dynamo.mapper.ThingInfoMapper;
 import com.thyng.dynamo.mapper.ThingMapper;
+import com.thyng.dynamo.mapper.ThingStatusChangeHistoryMapper;
+import com.thyng.dynamo.mapper.ThingStatusChangeMapper;
 import com.thyng.dynamo.mapper.TriggerEvaluationInfoMapper;
 import com.thyng.dynamo.mapper.TriggerInfoMapper;
 import com.thyng.dynamo.mapper.TriggerMapper;
@@ -72,7 +75,7 @@ public class DynamoRepositoryModule implements Module {
 		final List<String> tables = client.listTables().join().tableNames();
 		
 		Stream.of(Constant.COUNTER, Constant.TENANT, Constant.THING_GROUP_MAPPING, Constant.USER_GROUP_MAPPING,
-				Constant.TRIGGER_INFO, Constant.OBJECT)
+				Constant.THING_INFO, Constant.TRIGGER_INFO, Constant.OBJECT)
 			.filter(tableName -> !tables.contains(tableName))
 			.map(CreateTableCommand::new)
 			.forEach(command -> command.execute(client));
@@ -99,6 +102,7 @@ public class DynamoRepositoryModule implements Module {
 		context.setGatewayRepository(tenantAwareRepository(Constant.GATEWAY, new GatewayMapper(), client, counterRepository));
 		context.setTemplateRepository(tenantAwareRepository(Constant.TEMPALTE, templateMapper, client, counterRepository));
 		context.setThingRepository(tenantAwareRepository(Constant.THING, new ThingMapper(attributeMapper), client, counterRepository));
+		context.setThingInfoRepository(repository(Constant.THING_INFO, client, new ThingInfoMapper()));
 		context.setThingGroupRepository(tenantAwareRepository(Constant.THING_GROUP, new ThingGroupMapper(), client, counterRepository));
 		context.setThingGroupMappingRepository(mappingRepository(Constant.THING_GROUP_MAPPING, client, mappingMapper));
 		context.setTriggerRepository(tenantAwareRepository(Constant.TRIGGER, new TriggerMapper(windowMapper), client, counterRepository));
@@ -108,6 +112,7 @@ public class DynamoRepositoryModule implements Module {
 		context.setUserGroupRepository(tenantAwareRepository(Constant.USER_GROUP, new UserGroupMapper(), client, counterRepository));
 		context.setUserGroupMappingRepository(mappingRepository(Constant.USER_GROUP_MAPPING, client, mappingMapper));
 		context.setTriggerEvaluationInfoRepository(objectRepository(Constant.OBJECT, client, new TriggerEvaluationInfoMapper()));
+		context.setThingStatusChangeInfoRepository(objectRepository(Constant.OBJECT, client, new ThingStatusChangeHistoryMapper(new ThingStatusChangeMapper())));
 	}
 	
 	private <T extends Identifiable<T>> ObjectRepository<T> objectRepository(String tableName,

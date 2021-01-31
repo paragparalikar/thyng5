@@ -7,6 +7,7 @@ import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.ThingGroup;
+import com.thyng.domain.model.ThingInfo;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.TriggerInfo;
 import com.thyng.domain.model.User;
@@ -37,6 +38,7 @@ public class CoreModule implements Module {
 		wrapGatewayRepository(context);
 		wrapTemplateRepository(context);
 		wrapThingRepository(context);
+		wrapThingInfoRepository(context);
 		wrapThingGroupRepository(context);
 		wrapThingGroupMappingRepository(context);
 		wrapTriggerRepository(context);
@@ -92,6 +94,17 @@ public class CoreModule implements Module {
 					.delegate(delegate)
 					.eventBus(context.getEventBus())
 					.entityName(Constant.THING)
+					.build());
+		}
+	}
+	
+	private void wrapThingInfoRepository(Context context) {
+		final Repository<ThingInfo> delegate = context.getThingInfoRepository();
+		if(null != delegate) {
+			context.setThingInfoRepository(EventPublisherRepository.<ThingInfo>builder()
+					.delegate(delegate)
+					.eventBus(context.getEventBus())
+					.entityName(Constant.THING_INFO)
 					.build());
 		}
 	}

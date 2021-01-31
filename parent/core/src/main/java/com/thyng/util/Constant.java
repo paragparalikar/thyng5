@@ -1,6 +1,11 @@
 package com.thyng.util;
 
+import java.util.Date;
+
 public interface Constant {
+	
+	@SuppressWarnings("deprecation")
+	Long EPOCH = new Date(121, 0, 1, 0, 0, 0).getTime();
 
 	String COUNTER = "counters";
 	String TENANT = "tenants";
@@ -11,6 +16,7 @@ public interface Constant {
 	String ATTRIBUTE = "attributes";
 	String THING = "things";
 	String THING_INFO = "thing-infos";
+	String THING_STATUS_CHANGE_INFO = "thing-status-change-info";
 	String THING_GROUP = "thing-groups";
 	String THING_GROUP_MAPPING = "thing-group-mappings";
 	String TRIGGER = "triggers";

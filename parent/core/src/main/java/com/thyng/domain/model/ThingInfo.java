@@ -1,6 +1,8 @@
 package com.thyng.domain.model;
 
-import com.thyng.domain.intf.TenantAwareModel;
+import java.io.Serializable;
+
+import com.thyng.domain.intf.Identifiable;
 
 import lombok.Builder;
 import lombok.Value;
@@ -11,14 +13,11 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class ThingInfo implements TenantAwareModel<ThingInfo> {
+public class ThingInfo implements Serializable, Identifiable<ThingInfo> {
 	private static final long serialVersionUID = -4841182871379677017L;
 
 	private final String id;
-	private final String name;
-	private final String tenantId;
-	
-	private final boolean online;
-	private final long lastStatusChangeTimestamp;
+	private final Boolean online;
+	private final Long lastStatusChangeTimestamp;
 
 }

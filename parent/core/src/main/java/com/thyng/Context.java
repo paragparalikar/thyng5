@@ -7,6 +7,8 @@ import com.thyng.domain.model.Template;
 import com.thyng.domain.model.Tenant;
 import com.thyng.domain.model.Thing;
 import com.thyng.domain.model.ThingGroup;
+import com.thyng.domain.model.ThingInfo;
+import com.thyng.domain.model.ThingStatusChangeInfo;
 import com.thyng.domain.model.Trigger;
 import com.thyng.domain.model.TriggerEvaluationInfo;
 import com.thyng.domain.model.TriggerInfo;
@@ -36,6 +38,7 @@ public class Context implements Lifecycle {
 	private TenantAwareRepository<Gateway> gatewayRepository;
 	private TenantAwareRepository<Template> templateRepository;
 	private TenantAwareRepository<Thing> thingRepository;
+	private Repository<ThingInfo> thingInfoRepository;
 	private TenantAwareRepository<ThingGroup> thingGroupRepository;
 	private MappingRepository thingGroupMappingRepository;
 	private TenantAwareRepository<Trigger> triggerRepository;
@@ -45,6 +48,7 @@ public class Context implements Lifecycle {
 	private TenantAwareRepository<UserGroup> userGroupRepository;
 	private MappingRepository userGroupMappingRepository;
 	private ObjectRepository<TriggerEvaluationInfo> triggerEvaluationInfoRepository;
+	private ObjectRepository<ThingStatusChangeInfo> thingStatusChangeInfoRepository;
 	
 	private EventBus eventBus;
 	private MetricService metricService;
@@ -61,6 +65,7 @@ public class Context implements Lifecycle {
 		if(null != gatewayRepository) gatewayRepository.start();
 		if(null != templateRepository) templateRepository.start();
 		if(null != thingRepository) thingRepository.start();
+		if(null != thingInfoRepository) thingInfoRepository.start();
 		if(null != thingGroupRepository) thingGroupRepository.start();
 		if(null != thingGroupMappingRepository) thingGroupMappingRepository.start();
 		if(null != triggerRepository) triggerRepository.start();
@@ -76,10 +81,12 @@ public class Context implements Lifecycle {
 		if(null != userGroupMappingService) userGroupMappingService.start();
 		if(null != thingGroupMappingService) thingGroupMappingService.start();
 		if(null != triggerEvaluationEligibilityService) triggerEvaluationEligibilityService.start();
+		if(null != thingStatusChangeInfoRepository) thingStatusChangeInfoRepository.start();
 	}
 	
 	@Override
 	public void stop() throws Exception {
+		if(null != thingStatusChangeInfoRepository) thingStatusChangeInfoRepository.stop();
 		if(null != triggerEvaluationEligibilityService) triggerEvaluationEligibilityService.stop();
 		if(null != metricService) metricService.stop();
 		if(null != userGroupMappingService) userGroupMappingService.stop();
@@ -92,6 +99,7 @@ public class Context implements Lifecycle {
 		if(null != thingGroupRepository) thingGroupRepository.stop();
 		if(null != thingGroupMappingRepository) thingGroupMappingRepository.stop();
 		if(null != thingRepository) thingRepository.stop();
+		if(null != thingInfoRepository) thingInfoRepository.stop();
 		if(null != templateRepository) templateRepository.stop();
 		if(null != gatewayRepository) gatewayRepository.stop();
 		if(null != userGroupRepository) userGroupRepository.stop();
